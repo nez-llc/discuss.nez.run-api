@@ -1,0 +1,14 @@
+name: "Deploy"
+on: [push]
+jobs:
+  Deploy-App-Engine:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: discuss-nez
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+      - run: gcloud app deploy app.yaml
