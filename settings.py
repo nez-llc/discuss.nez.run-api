@@ -19,7 +19,7 @@ ROOT_URLCONF = 'discuss_api.urls'
 
 WSGI_APPLICATION = 'discuss_api.wsgi.application'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
