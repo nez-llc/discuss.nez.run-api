@@ -7,11 +7,12 @@ from dotenv import load_dotenv
 
 load_dotenv('.env.local')
 
+RUN_ON_REAL_SERVER = os.environ.get('RUN_ON_REAL_SERVER', 'false')
 
 BASE_DIR = Path(__file__).resolve().parent
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = RUN_ON_REAL_SERVER != 'true'
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-_fj0b612=*&$*&*u9)w70r3$5k9nf8um!&hyfbv7dfx@_#ri)g'
 
