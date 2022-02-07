@@ -7,11 +7,12 @@ from dotenv import load_dotenv
 
 load_dotenv('.env.local')
 
-
 BASE_DIR = Path(__file__).resolve().parent
+DB_CONNECTION_URL = os.environ.get('DB_CONNECTION_URL')
+RUN_ON_REAL_SERVER = os.environ.get('RUN_ON_REAL_SERVER', 'false')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = RUN_ON_REAL_SERVER != 'true'
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-_fj0b612=*&$*&*u9)w70r3$5k9nf8um!&hyfbv7dfx@_#ri)g'
 
@@ -19,7 +20,7 @@ ROOT_URLCONF = 'discuss_api.urls'
 
 WSGI_APPLICATION = 'discuss_api.wsgi.application'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -60,10 +61,7 @@ TEMPLATES = [
 ]
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.parse(DB_CONNECTION_URL),
 }
 
 AUTH_PASSWORD_VALIDATORS = [{
