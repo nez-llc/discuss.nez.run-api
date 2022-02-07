@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'discuss_api.apps.status',
-    # 'discuss_api.apps.question',
+    'discuss_api.apps.agenda',
 ]
 
 MIDDLEWARE = [
