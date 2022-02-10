@@ -24,6 +24,29 @@ class AgendaTest(TestCase):
             desc=SAMPLE_AGENDA_DATA['desc'],
         )
 
+    def test_updown_model(self):
+        user = User.objects.create(
+            username='updown_tester',
+        )
+
+        agenda = Agenda.objects.create(
+            writer=user,
+            title=SAMPLE_AGENDA_DATA['title'],
+            summary=SAMPLE_AGENDA_DATA['summary'],
+            desc=SAMPLE_AGENDA_DATA['desc'],
+        )
+
+        self.assertEqual(agenda.updown, {'total': 0, 'up': 0, 'down': 0})
+
+        agenda.add_updown(user, Updown.UP)
+        self.assertEqual(agenda.updown, {'total': 1, 'up': 1, 'down': 0})
+
+        agenda.add_updown(user, Updown.UP)
+        self.assertEqual(agenda.updown, {'total': 1, 'up': 1, 'down': 0})
+
+        agenda.add_updown(user, Updown.DOWN)
+        self.assertEqual(agenda.updown, {'total': -1, 'up': 0, 'down': 1})
+
     def test_agenda(self):
         client = Client()
         response = client.get('/api/agendas/1/', content_type='application/json')

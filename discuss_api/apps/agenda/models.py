@@ -28,6 +28,36 @@ class Agenda(m.Model):
     created_time = m.DateTimeField(auto_now_add=True)
     updated_time = m.DateTimeField(auto_now=True)
 
+    @property
+    def updown(self):
+        up_count = UpdownHistory.objects.filter(agenda=self, updown=Updown.UP).count()
+        down_count = UpdownHistory.objects.filter(agenda=self, updown=Updown.DOWN).count()
+
+        return {
+            'total': up_count - down_count,
+            'up': up_count,
+            'down': down_count,
+        }
+
+    def add_updown(self, user, updown: Updown):
+        history, created = UpdownHistory.objects.get_or_create(agenda=self, voter=user)
+        history.updown = updown
+        history.save()
+
+    def __str__(self):
+        return self.title
+
+
+class UpdownHistory(m.Model):
+    voter = m.ForeignKey(User, on_delete=m.CASCADE)
+    agenda = m.ForeignKey(Agenda, on_delete=m.CASCADE)
+    updown = m.CharField(
+        max_length=20,
+        choices=[(ud.name, ud.value) for ud in Updown]
+    )
+    created_time = m.DateTimeField(auto_now_add=True)
+    updated_time = m.DateTimeField(auto_now=True)
+
 
 class Comment(m.Model):
     writer = m.ForeignKey(User, on_delete=m.CASCADE)
