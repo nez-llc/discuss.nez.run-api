@@ -1,7 +1,7 @@
 asgiref==3.5.0; python_version >= "3.8"
 dj-database-url==0.5.0
 django==4.0.1; python_version >= "3.8"
-djangorestframework==3.13.1; python_version >= "3.6"
+django-ninja==0.17.0
 python-dotenv==0.19.2; python_version >= "3.5"
 pytz==2021.3; python_version >= "3.6"
 sqlparse==0.4.2; python_version >= "3.8"
