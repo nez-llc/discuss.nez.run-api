@@ -10,6 +10,12 @@ SAMPLE_AGENDA_DATA = {
     'desc': '유잼 설명',
 }
 
+SAMPLE_TAGS = [{
+    'name': '유재',
+}, {
+    'name': '유잼',
+}]
+
 
 class AgendaTest(TestCase):
     def setUp(self):
@@ -23,6 +29,10 @@ class AgendaTest(TestCase):
             summary=SAMPLE_AGENDA_DATA['summary'],
             desc=SAMPLE_AGENDA_DATA['desc'],
         )
+
+        for sample_tag in SAMPLE_TAGS:
+            tag = Tag.objects.create(name=sample_tag['name'])
+            self.agenda.tags.add(tag)
 
     def test_updown_model(self):
         user = User.objects.create(
