@@ -3,11 +3,13 @@ from enum import Enum
 from django.contrib.auth import get_user_model
 from django.db import models as m
 
+from discuss_api.apps.tag.models import Tag
+
 
 User = get_user_model()
 
 
-class Updown(Enum):
+class Updown(str, Enum):
     UP = 'up'
     DOWN = 'down'
 
@@ -20,7 +22,6 @@ class VoteChoice(Enum):
 
 class Agenda(m.Model):
     writer = m.ForeignKey(User, on_delete=m.CASCADE)
-
     title = m.CharField(max_length=150)
     summary = m.TextField()
     desc = m.TextField()
@@ -28,10 +29,12 @@ class Agenda(m.Model):
     created_time = m.DateTimeField(auto_now_add=True)
     updated_time = m.DateTimeField(auto_now=True)
 
+    tags = m.ManyToManyField(Tag, related_name='agendas')
+
     @property
     def updown(self):
-        up_count = UpdownHistory.objects.filter(agenda=self, updown=Updown.UP).count()
-        down_count = UpdownHistory.objects.filter(agenda=self, updown=Updown.DOWN).count()
+        up_count = self.updown_history.filter(updown=Updown.UP).count()
+        down_count = self.updown_history.filter(updown=Updown.DOWN).count()
 
         return {
             'total': up_count - down_count,
@@ -50,7 +53,7 @@ class Agenda(m.Model):
 
 class UpdownHistory(m.Model):
     voter = m.ForeignKey(User, on_delete=m.CASCADE)
-    agenda = m.ForeignKey(Agenda, on_delete=m.CASCADE)
+    agenda = m.ForeignKey(Agenda, on_delete=m.CASCADE, related_name='updown_history')
     updown = m.CharField(
         max_length=20,
         choices=[(ud.name, ud.value) for ud in Updown]
@@ -63,6 +66,13 @@ class Comment(m.Model):
     writer = m.ForeignKey(User, on_delete=m.CASCADE)
     agenda = m.ForeignKey(Agenda, on_delete=m.CASCADE)
 
+    # created_time = m.DateTimeField(auto_now_add=True)
+    # updated_time = m.DateTimeField(auto_now=True)
+
+    #TODO: 코멘트 내용, 추천 수, 코멘트 상태(회원 삭제, 관리자 삭제, 회원탈퇴)
+    # content = m.TextField()
+    # agreement_count = m.PositiveIntegerField()
+
 
 class Vote(m.Model):
     voter = m.ForeignKey(User, on_delete=m.DO_NOTHING)
@@ -71,3 +81,4 @@ class Vote(m.Model):
         max_length=20,
         choices=[(vote.name, vote.value) for vote in VoteChoice]
     )
+    #created_time = m.DateTimeField(auto_now_add=True)
