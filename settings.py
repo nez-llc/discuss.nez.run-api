@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'discuss_api.apps.status',
     'discuss_api.apps.agenda',
+    'discuss_api.apps.tag',
 ]
 
 MIDDLEWARE = [
