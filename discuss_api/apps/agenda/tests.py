@@ -2,7 +2,9 @@ from django.contrib.auth.models import User
 from django.test import TestCase, Client
 
 from discuss_api.apps.agenda.models import Updown, Agenda
+from discuss_api.apps.member.models import Token
 from discuss_api.apps.tag.models import Tag
+
 
 SAMPLE_AGENDA_DATA = {
     'title': '유잼 제목',
@@ -19,9 +21,7 @@ SAMPLE_TAGS = [{
 
 class AgendaTest(TestCase):
     def setUp(self):
-        user = User.objects.create(
-            username='tester',
-        )
+        user = User.objects.create(username='tester')
 
         self.agenda = Agenda.objects.create(
             writer=user,
@@ -65,11 +65,16 @@ class AgendaTest(TestCase):
         self.assertEqual(data['desc'], SAMPLE_AGENDA_DATA['desc'])
 
     def test_agenda_updown(self):
-        user = User.objects.create(
-            username='updownAPI_tester',
-        )
+        user = User.objects.create(username='updownAPI_tester')
+
+        token = Token.objects.create(user=user, value='s4mp13_t0k3n')
+
+        headers = {
+            'HTTP_AUTHORIZATION': f'Bearer {token.value}'
+        }
 
         client = Client()
+
         response = client.get('/api/agendas/1', content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
@@ -83,7 +88,7 @@ class AgendaTest(TestCase):
 
         response = client.post('/api/agendas/1/updown', {
             'updown': Updown.UP,
-        }, content_type='application/json')
+        }, content_type='application/json', **headers)
 
         data = response.json()
 
