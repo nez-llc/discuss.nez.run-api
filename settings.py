@@ -29,7 +29,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
     'discuss_api.apps.status',
     'discuss_api.apps.agenda',
     'discuss_api.apps.tag',
