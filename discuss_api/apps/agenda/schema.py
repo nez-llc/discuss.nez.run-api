@@ -2,6 +2,12 @@ from datetime import datetime
 
 from ninja import Schema
 
+from discuss_api.apps.agenda.models import Updown
+
+
+class UpdownIn(Schema):
+    updown: Updown
+
 
 class UpdownOut(Schema):
     total: int
