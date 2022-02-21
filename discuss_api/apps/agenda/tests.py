@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase, Client
 
 from discuss_api.apps.agenda.models import Updown, Agenda
-from discuss_api.apps.member.models import Token
+from discuss_api.apps.member.models import Token, UserProfile
 from discuss_api.apps.tag.models import Tag
 
 
@@ -22,6 +22,7 @@ SAMPLE_TAGS = [{
 class AgendaTest(TestCase):
     def setUp(self):
         user = User.objects.create(username='tester')
+        profile = UserProfile.objects.create(user=user, nickname=user.username)
 
         self.agenda = Agenda.objects.create(
             writer=user,

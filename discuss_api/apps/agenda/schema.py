@@ -3,6 +3,7 @@ from datetime import datetime
 from ninja import Schema
 
 from discuss_api.apps.agenda.models import Updown
+from discuss_api.apps.member.schema import UserOut
 
 
 class UpdownIn(Schema):
@@ -30,6 +31,7 @@ class CommentOut(Schema):
 
 class AgendaOut(Schema):
     id: int
+    writer: UserOut
     title: str
     summary: str
     desc: str
