@@ -47,6 +47,10 @@ class Agenda(m.Model):
         history.updown = updown
         history.save()
 
+    def insert_comment(self, user, content):
+        comment, created = Comment.objects.get_or_create(agenda=self, writer=user, content=content)
+        comment.save()
+
     def __str__(self):
         return self.title
 
@@ -64,14 +68,14 @@ class UpdownHistory(m.Model):
 
 class Comment(m.Model):
     writer = m.ForeignKey(User, on_delete=m.CASCADE)
-    agenda = m.ForeignKey(Agenda, on_delete=m.CASCADE)
+    agenda = m.ForeignKey(Agenda, on_delete=m.CASCADE, related_name='comments')
+    content = m.TextField(default='')
 
-    # created_time = m.DateTimeField(auto_now_add=True)
-    # updated_time = m.DateTimeField(auto_now=True)
+    created_time = m.DateTimeField(auto_now_add=True)
+    updated_time = m.DateTimeField(auto_now=True)
 
-    #TODO: 코멘트 내용, 추천 수, 코멘트 상태(회원 삭제, 관리자 삭제, 회원탈퇴)
-    # content = m.TextField()
-    # agreement_count = m.PositiveIntegerField()
+    def __str__(self):
+        return self.content
 
 
 class Vote(m.Model):
