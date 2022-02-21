@@ -22,7 +22,7 @@ SAMPLE_TAGS = [{
 class AgendaTest(TestCase):
     def setUp(self):
         user = User.objects.create(username='tester')
-        profile = UserProfile.objects.create(user=user, nickname=user.username)
+        UserProfile.objects.create(user=user, nickname=user.username)
 
         self.agenda = Agenda.objects.create(
             writer=user,
