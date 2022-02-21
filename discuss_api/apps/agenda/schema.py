@@ -20,11 +20,20 @@ class TagOut(Schema):
     name: str
 
 
+class CommentOut(Schema):
+    id: int
+    content: str
+    created_time: datetime
+    updated_time: datetime
+    agreement: int
+
+
 class AgendaOut(Schema):
     id: int
     title: str
     summary: str
     desc: str
     created_time: datetime
+    updated_time: datetime
     tags: list[TagOut]
     updown: UpdownOut

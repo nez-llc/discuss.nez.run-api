@@ -118,3 +118,15 @@ class AgendaTest(TestCase):
         self.assertEqual(data[0]['id'], 1)
         self.assertEqual(data[0]['title'], SAMPLE_AGENDA_DATA['title'])
         self.assertEqual(data[0]['tags'][0]['name'], SAMPLE_TAGS[0]['name'])
+
+    def test_comment_list(self):
+        user = User.objects.create(username='comment_tester')
+
+        agenda = self.agenda
+        agenda.insert_comment(user, '우와아아아앙ㅇ')
+
+        client = Client()
+
+        response = client.get('/api/agendas/1/comments', content_type='application/json')
+
+        self.assertEqual(response.status_code, 200)
