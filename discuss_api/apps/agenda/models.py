@@ -50,6 +50,7 @@ class Agenda(m.Model):
     def insert_comment(self, user, content):
         comment, created = Comment.objects.get_or_create(agenda=self, writer=user, content=content)
         comment.save()
+        return comment
 
     def __str__(self):
         return self.title
@@ -74,8 +75,28 @@ class Comment(m.Model):
     created_time = m.DateTimeField(auto_now_add=True)
     updated_time = m.DateTimeField(auto_now=True)
 
+    # TODO : 코멘트 상태(회원 삭제, 관리자 삭제, 회원 탈퇴)
+
+    @property
+    def agreement(self):
+        return self.agreement_history.filter(comment=self).count()
+
+    def add_agreement(self, user):
+        history, created = AgreementHistory.objects.get_or_create(comment=self, voter=user)
+        history.save()
+
+    def delete_agreement(self, user):
+        AgreementHistory.objects.get(comment=self, voter=user).delete()
+
     def __str__(self):
         return self.content
+
+
+class AgreementHistory(m.Model):
+    voter = m.ForeignKey(User, on_delete=m.CASCADE)
+    comment = m.ForeignKey(Comment, on_delete=m.CASCADE, related_name='agreement_history')
+
+    created_time = m.DateTimeField(auto_now_add=True)
 
 
 class Vote(m.Model):

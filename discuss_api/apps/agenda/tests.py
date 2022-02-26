@@ -121,13 +121,81 @@ class AgendaTest(TestCase):
         self.assertEqual(data[0]['tags'][0]['name'], SAMPLE_TAGS[0]['name'])
 
     def test_comment_list(self):
-        user = User.objects.create(username='comment_tester')
+        user = User.objects.create(username='comment_reader')
 
         agenda = self.agenda
-        agenda.insert_comment(user, '우와아아아앙ㅇ')
+        agenda.insert_comment(agenda, user, '우와아아아앙ㅇ')
 
         client = Client()
 
         response = client.get('/api/agendas/1/comments', content_type='application/json')
 
         self.assertEqual(response.status_code, 200)
+
+    def test_comment(self):
+        user = User.objects.create(username='commentAPI_writer')
+
+        token = Token.objects.create(user=user, value='s4mp13_t0k3n')
+
+        headers = {
+            'HTTP_AUTHORIZATION': f'Bearer {token.value}'
+        }
+
+        client = Client()
+        response = client.post('/api/agendas/1/comments', {
+            'content': 'Okay',
+        }, content_type='application/json', **headers)
+
+        self.assertEqual(response.status_code, 201)
+
+        response = client.post('/api/agendas/1/comments', {
+            'content': 'test content 2, Django Ninja allows you to define the schema of your responses both for validation and documentation purposes.',
+        }, content_type='application/json', **headers)
+        self.assertEqual(response.status_code, 201)
+
+        # Unauthorized request
+        response = client.put('/api/agendas/1/comments/1', {
+            'content': 'I change my mind, I think is not okay!',
+        }, content_type='application/json')
+        self.assertEqual(response.status_code, 401)
+
+        response = client.put('/api/agendas/1/comments/1', {
+            'content': 'I change my mind, I think is not okay!',
+        }, content_type='application/json', **headers)
+
+        self.assertEqual(response.status_code, 201)
+
+        other_user = User.objects.create(username='commentAPI_another_tester')
+        token_for_other = Token.objects.create(user=other_user, value='0th3r_t0k3n')
+
+        # request from not the owner of the comment
+        response = client.put('/api/agendas/1/comments/1', {
+            'content': 'I think is not okay!',
+        }, content_type='application/json', **{
+            'HTTP_AUTHORIZATION': f'Bearer {token_for_other.value}'
+        })
+        self.assertEqual(response.status_code, 403)
+
+        response = client.delete('/api/agendas/1/comments/2', **headers)
+        self.assertEqual(response.status_code, 200)
+
+    def test_comment_agreement(self):
+        user = User.objects.create(username='commentAPI_agreement_user')
+
+        token = Token.objects.create(user=user, value='s4mp13_t0k3n')
+
+        headers = {
+            'HTTP_AUTHORIZATION': f'Bearer {token.value}'
+        }
+
+        client = Client()
+        response = client.post('/api/agendas/1/comments', {
+            'content': 'Good Comment~~',
+        }, content_type='application/json', **headers)
+        self.assertEqual(response.status_code, 201)
+
+        response = client.post('/api/agendas/1/comments/1/agreement', **headers)
+        self.assertEqual(response.status_code, 201)
+
+        response = client.delete('/api/agendas/1/comments/1/agreement', **headers)
+        self.assertEqual(response.status_code, 201)

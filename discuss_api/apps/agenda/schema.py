@@ -21,8 +21,13 @@ class TagOut(Schema):
     name: str
 
 
+class CommentIn(Schema):
+    content: str = ''
+
+
 class CommentOut(Schema):
     id: int
+    writer: UserOut
     content: str
     created_time: datetime
     updated_time: datetime
