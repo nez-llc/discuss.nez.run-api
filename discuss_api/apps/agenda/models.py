@@ -32,6 +32,24 @@ class Agenda(m.Model):
     tags = m.ManyToManyField(Tag, related_name='agendas')
 
     @property
+    def vote(self):
+        agree_count = self.vote_history.filter(value=VoteChoice.AGREE).count()
+        not_agree_count = self.vote_history.filter(value=VoteChoice.NOT_AGREE).count()
+        not_sure_count = self.vote_history.filter(value=VoteChoice.NOT_SURE).count()
+
+        return {
+            'agree': agree_count,
+            'not_agree': not_agree_count,
+            'not_sure': not_sure_count,
+        }
+
+    def make_vote(self, user, value: VoteChoice):
+        ballot, created = Vote.objects.get_or_create(agenda=self, voter=user)
+        ballot.value = value
+        ballot.save()
+        return ballot
+
+    @property
     def updown(self):
         up_count = self.updown_history.filter(updown=Updown.UP).count()
         down_count = self.updown_history.filter(updown=Updown.DOWN).count()
@@ -100,10 +118,12 @@ class AgreementHistory(m.Model):
 
 
 class Vote(m.Model):
-    voter = m.ForeignKey(User, on_delete=m.DO_NOTHING)
-    agenda = m.ForeignKey(Agenda, on_delete=m.DO_NOTHING)
+    voter = m.ForeignKey(User, on_delete=m.CASCADE)
+    agenda = m.ForeignKey(Agenda, on_delete=m.CASCADE, related_name='vote_history')
     value = m.CharField(
         max_length=20,
         choices=[(vote.name, vote.value) for vote in VoteChoice]
     )
-    #created_time = m.DateTimeField(auto_now_add=True)
+
+    created_time = m.DateTimeField(auto_now_add=True)
+    updated_time = m.DateTimeField(auto_now=True)

@@ -245,3 +245,21 @@ class AgendaTest(TestCase):
 
         response = client.delete('/api/agendas/1/comments/1/agreement', **headers)
         self.assertEqual(response.status_code, 201)
+
+    def test_vote(self):
+        user = User.objects.create(username='voteAPI_voter')
+        token = Token.objects.create(user=user, value='s4mp13_t0k3n')
+        headers = {
+            'HTTP_AUTHORIZATION': f'Bearer {token.value}'
+        }
+
+        client = Client()
+        response = client.post('/api/agendas/1/votes', {
+            'ballot': 'not_sure',
+        }, content_type='application/json', **headers)
+        self.assertEqual(response.status_code, 201)
+
+        response = client.post('/api/agendas/1/votes', {
+            'ballot': 'agree',
+        }, content_type='application/json', **headers)
+        self.assertEqual(response.status_code, 201)

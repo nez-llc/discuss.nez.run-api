@@ -3,10 +3,9 @@ from ninja import Router
 from ninja.errors import HttpError
 
 from discuss_api.apps.agenda.models import Agenda
-from discuss_api.apps.agenda.schema import AgendaOut, UpdownOut, UpdownIn, AgendaIn
+from discuss_api.apps.agenda.schema import AgendaOut, UpdownOut, UpdownIn, VoteOut, VoteIn, AgendaIn
 from discuss_api.apps.member.auth import TokenAuth
 from discuss_api.apps.tag.models import Tag
-
 
 
 api = Router()
@@ -72,3 +71,10 @@ def edit_agenda_updown(request, agenda_id: int, updown: UpdownIn):
     agenda = get_object_or_404(Agenda, id=agenda_id)
     agenda.add_updown(request.auth, updown.updown)
     return agenda.updown
+
+
+@api.post('/{agenda_id}/votes', response={201: VoteOut}, auth=TokenAuth())
+def vote_on_the_agenda(request, agenda_id: int, vote: VoteIn):
+    agenda = Agenda.objects.get(id=agenda_id)
+    agenda.make_vote(user=request.auth, value=vote.ballot)
+    return agenda.vote

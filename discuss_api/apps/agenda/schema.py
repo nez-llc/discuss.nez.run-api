@@ -2,7 +2,7 @@ from datetime import datetime
 
 from ninja import Schema
 
-from discuss_api.apps.agenda.models import Updown
+from discuss_api.apps.agenda.models import Updown, VoteChoice
 from discuss_api.apps.member.schema import UserOut
 
 
@@ -65,3 +65,4 @@ class AgendaOut(Schema):
     updated_time: datetime
     tags: list[TagOut]
     updown: UpdownOut
+    vote: VoteOut
