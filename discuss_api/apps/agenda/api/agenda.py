@@ -3,8 +3,10 @@ from ninja import Router
 from ninja.errors import HttpError
 
 from discuss_api.apps.agenda.models import Agenda
-from discuss_api.apps.agenda.schema import AgendaOut, UpdownOut, UpdownIn
+from discuss_api.apps.agenda.schema import AgendaOut, UpdownOut, UpdownIn, AgendaIn
 from discuss_api.apps.member.auth import TokenAuth
+from discuss_api.apps.tag.models import Tag
+
 
 
 api = Router()
@@ -23,6 +25,45 @@ def agenda_list_by_tag(request, tag_name: str = None):
 @api.get('/{agenda_id}', response=AgendaOut)
 def get_agenda(request, agenda_id: int):
     agenda = get_object_or_404(Agenda, id=agenda_id)
+    return agenda
+
+
+@api.post('/', response={201: AgendaOut}, auth=TokenAuth())
+def insert_agenda(request, agenda_in: AgendaIn):
+    agenda = Agenda.objects.create(
+        writer=request.auth,
+        title=agenda_in.title,
+        summary=agenda_in.summary,
+        desc=agenda_in.desc,
+    )
+
+    for tag_id in agenda_in.tags:
+        tag = Tag.objects.get(tag_id)
+        agenda.tags.add(tag)
+
+    return agenda
+
+
+@api.post('/{agenda_id}', response={201: AgendaOut}, auth=TokenAuth())
+def edit_agenda(request, agenda_id: int, agenda_in: AgendaIn):
+    agenda = get_object_or_404(Agenda, id=agenda_id)
+
+    if not request.auth:
+        raise HttpError(401, 'Unauthorized')
+
+    if request.auth != agenda.writer:
+        raise HttpError(403, "You don't have permission to access")
+
+    agenda.title = agenda_in.title
+    agenda.summary = agenda_in.summary
+    agenda.desc = agenda_in.desc
+
+    for tag_id in agenda_in.tags:
+        tag = Tag.objects.get(id=tag_id)
+        agenda.tags.add(tag)
+
+    agenda.save()
+
     return agenda
 
 

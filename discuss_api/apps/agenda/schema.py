@@ -38,6 +38,23 @@ class CommentOut(Schema):
     agreement: int
 
 
+class VoteIn(Schema):
+    ballot: VoteChoice
+
+
+class VoteOut(Schema):
+    agree: int
+    not_agree: int
+    not_sure: int
+
+
+class AgendaIn(Schema):
+    title: str
+    summary: str
+    desc: str
+    tags: list[TagIn] = ''
+
+
 class AgendaOut(Schema):
     id: int
     writer: UserOut
