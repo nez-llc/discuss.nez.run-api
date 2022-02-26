@@ -16,6 +16,10 @@ class UpdownOut(Schema):
     down: int
 
 
+class TagIn(Schema):
+    id: int
+
+
 class TagOut(Schema):
     id: int
     name: str

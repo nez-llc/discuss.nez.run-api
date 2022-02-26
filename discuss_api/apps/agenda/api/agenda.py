@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from ninja import Router
+from ninja.errors import HttpError
 
 from discuss_api.apps.agenda.models import Agenda
 from discuss_api.apps.agenda.schema import AgendaOut, UpdownOut, UpdownIn

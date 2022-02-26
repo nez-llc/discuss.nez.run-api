@@ -65,6 +65,52 @@ class AgendaTest(TestCase):
         self.assertEqual(data['summary'], SAMPLE_AGENDA_DATA['summary'])
         self.assertEqual(data['desc'], SAMPLE_AGENDA_DATA['desc'])
 
+    def test_agenda_update(self):
+        writer = User.objects.create(username='agendaAPI_tester')
+        other_user = User.objects.create(username='agendaAPI_tester2')
+
+        token_for_writer = Token.objects.create(user=writer, value='s4mp13_t0k3n')
+        token_for_other = Token.objects.create(user=other_user, value='0th3r_t0k3n')
+
+        updated_values = {
+            'title': 'Updated title',
+            'summary': 'Updated summary',
+            'desc': 'Updated desc',
+        }
+
+        authorized_headers = {
+            'HTTP_AUTHORIZATION': f'Bearer {token_for_writer.value}'
+        }
+
+        client = Client()
+
+        response = client.post('/api/agendas/', {
+            'title': 'New title',
+            'summary': 'New summary',
+            'desc': 'New desc',
+        }, content_type='application/json', **authorized_headers)
+        self.assertEqual(response.status_code, 201)
+
+        # Unauthorized request
+        response = client.post('/api/agendas/1', updated_values)
+        self.assertEqual(response.status_code, 401)
+
+        # request from not the owner of the post
+        response = client.post('/api/agendas/1', updated_values, content_type='application/json',
+                               **{'HTTP_AUTHORIZATION': f'Bearer {token_for_other.value}'})
+        self.assertEqual(response.status_code, 403)
+
+        # request to not exists
+        response = client.post('/api/agendas/999',
+                               updated_values, content_type='application/json', **authorized_headers)
+        self.assertEqual(response.status_code, 404)
+
+        response = client.post('/api/agendas/1', {
+            'title': '',
+            # missing desc
+        }, **authorized_headers)
+        self.assertEqual(response.status_code, 400)
+
     def test_agenda_updown(self):
         user = User.objects.create(username='updownAPI_tester')
 
