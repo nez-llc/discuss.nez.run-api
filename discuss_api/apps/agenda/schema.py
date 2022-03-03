@@ -6,6 +6,12 @@ from discuss_api.apps.agenda.models import Updown, VoteChoice
 from discuss_api.apps.member.schema import UserOut
 
 
+class StatisticsOut(Schema):
+    agenda_count: int
+    comment_count: int
+    vote_count: int
+
+
 class UpdownIn(Schema):
     updown: Updown
 

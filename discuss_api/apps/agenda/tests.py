@@ -263,3 +263,8 @@ class AgendaTest(TestCase):
             'ballot': 'agree',
         }, content_type='application/json', **headers)
         self.assertEqual(response.status_code, 201)
+
+    def test_statistics(self):
+        client = Client()
+        response = client.get('/api/statistics/')
+        self.assertEqual(response.status_code, 200)
