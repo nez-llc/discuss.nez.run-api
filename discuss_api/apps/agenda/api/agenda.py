@@ -1,8 +1,8 @@
 from django.shortcuts import get_object_or_404
 from ninja import Router
 
-from discuss_api.apps.agenda.models import Agenda, Updown
-from discuss_api.apps.agenda.schema import AgendaOut, UpdownOut
+from discuss_api.apps.agenda.models import Agenda
+from discuss_api.apps.agenda.schema import AgendaOut, UpdownOut, UpdownIn
 from discuss_api.apps.member.auth import TokenAuth
 
 
@@ -25,8 +25,8 @@ def get_agenda(request, agenda_id: int):
     return agenda
 
 
-@api.post('/{agenda_id}/updown', response=UpdownOut, auth=TokenAuth())
-def edit_agenda_updown(request, agenda_id: int, updown: Updown):
+@api.post('/{agenda_id}/updown', response={201: UpdownOut}, auth=TokenAuth())
+def edit_agenda_updown(request, agenda_id: int, updown: UpdownIn):
     agenda = get_object_or_404(Agenda, id=agenda_id)
-    agenda.add_updown(request.auth, updown)
+    agenda.add_updown(request.auth, updown.updown)
     return agenda.updown
