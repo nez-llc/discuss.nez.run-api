@@ -1,0 +1,8 @@
+[paths]
+source =
+    discuss_api
+
+[run]
+omit =
+    */migrations/*
+    wsgi.py

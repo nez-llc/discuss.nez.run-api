@@ -15,6 +15,7 @@ django-ninja = "^0.17.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"
+coverage = "^6.3.2"
 
 
 [build-system]

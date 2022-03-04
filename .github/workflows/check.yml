@@ -1,0 +1,39 @@
+name: "Check"
+
+on:
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  run_flake8:
+    name: "Run flake8"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: "Run flake8"
+        uses: TrueBrain/actions-flake8@v2
+        with:
+          only_warn: 1
+
+  test:
+    name: "Run test"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: "Install dependencies"
+        run: |
+          pip install -U pip
+          pip install poetry
+          poetry config virtualenvs.create false
+          poetry install
+      - name: "Run test"
+        run: coverage run manage.py test
+      - name: "Print coverage report"
+        run: coverage report
