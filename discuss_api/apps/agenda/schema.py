@@ -58,7 +58,7 @@ class AgendaIn(Schema):
     title: str
     summary: str
     desc: str
-    tags: list[TagIn] = ''
+    tags: list[TagIn] = []
 
 
 class AgendaOut(Schema):
