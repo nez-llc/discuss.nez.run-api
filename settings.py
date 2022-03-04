@@ -13,8 +13,7 @@ RUN_ON_REAL_SERVER = os.environ.get('RUN_ON_REAL_SERVER', 'false')
 
 DEBUG = RUN_ON_REAL_SERVER != 'true'
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-_fj0b612=*&$*&*u9)w70r3$5k9nf8um!&hyfbv7dfx@_#ri)g'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-_fj0b612=*&$*&*u9)w70r3$5k9nf8um!&hyfbv7dfx@_#ri)g')
 
 ROOT_URLCONF = 'discuss_api.urls'
 
