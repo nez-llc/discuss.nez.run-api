@@ -1,7 +1,10 @@
 name: "Deploy"
-on: [push]
+on:
+  push:
+    branches:
+      - main
 jobs:
-  Deploy-App-Engine:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
@@ -14,4 +17,6 @@ jobs:
         uses: google-github-actions/setup-gcloud@v0
         with:
           project_id: discuss-nez
-      - run: gcloud app deploy app.yaml
+      - run: |
+          gcloud builds submit --tag=gcr.io/discuss-nez/api
+          gcloud run deploy api --image=gcr.io/discuss-nez/api --region=asia-northeast3
