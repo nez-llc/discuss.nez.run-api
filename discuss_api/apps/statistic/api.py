@@ -1,7 +1,7 @@
 from ninja import Router
 
 from discuss_api.apps.agenda.models import Agenda, Comment, Vote
-from discuss_api.apps.agenda.schema import StatisticsOut
+from discuss_api.apps.statistic.schema import StatisticsOut
 
 
 api = Router()

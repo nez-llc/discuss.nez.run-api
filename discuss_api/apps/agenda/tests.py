@@ -266,5 +266,12 @@ class AgendaTest(TestCase):
 
     def test_statistics(self):
         client = Client()
+
         response = client.get('/api/statistics/')
+
         self.assertEqual(response.status_code, 200)
+
+        data = response.json()
+        self.assertEqual(data['agenda_count'], 1)
+        self.assertEqual(data['comment_count'], 0)
+        self.assertEqual(data['vote_count'], 0)
