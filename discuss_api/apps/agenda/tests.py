@@ -64,6 +64,8 @@ class AgendaTest(TestCase):
         self.assertEqual(data['title'], SAMPLE_AGENDA_DATA['title'])
         self.assertEqual(data['summary'], SAMPLE_AGENDA_DATA['summary'])
         self.assertEqual(data['desc'], SAMPLE_AGENDA_DATA['desc'])
+        self.assertEqual(data['updown'], {'total': 0, 'up': 0, 'down': 0})
+        self.assertEqual(data['vote_count'], {'agree': 0, 'not_agree': 0, 'not_sure': 0})
 
     def test_agenda_update(self):
         writer = User.objects.create(username='agendaAPI_tester')
@@ -170,7 +172,7 @@ class AgendaTest(TestCase):
         user = User.objects.create(username='comment_reader')
 
         agenda = self.agenda
-        agenda.insert_comment(agenda, user, '우와아아아앙ㅇ')
+        agenda.add_comment(user, '우와아아아앙ㅇ')
 
         client = Client()
 
@@ -195,7 +197,7 @@ class AgendaTest(TestCase):
         self.assertEqual(response.status_code, 201)
 
         response = client.post('/api/agendas/1/comments', {
-            'content': 'test content 2, Django Ninja allows you to define the schema of your responses both for validation and documentation purposes.',
+            'content': '정책 토론을 위한 댓글 등록 테스트 코드이다. Test content for discuss agenda service~ insert new comment',
         }, content_type='application/json', **headers)
         self.assertEqual(response.status_code, 201)
 

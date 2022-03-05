@@ -65,4 +65,4 @@ class AgendaOut(Schema):
     updated_time: datetime
     tags: list[TagOut]
     updown: UpdownOut
-    vote: VoteOut
+    vote_count: VoteOut

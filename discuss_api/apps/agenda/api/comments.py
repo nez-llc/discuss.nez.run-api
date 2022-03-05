@@ -16,9 +16,9 @@ def comment_list(request, agenda_id: int):
 
 
 @api.post('/{agenda_id}/comments', response={201: CommentOut}, auth=TokenAuth())
-def insert_comment(request, agenda_id: int, comment_content: CommentIn):
+def insert_comment(request, agenda_id: int, comment_data: CommentIn):
     agenda = get_object_or_404(Agenda, id=agenda_id)
-    comment = agenda.insert_comment(request.auth, comment_content.content)
+    comment = agenda.add_comment(request.auth, comment_data.content)
     return comment
 
 

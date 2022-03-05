@@ -32,7 +32,7 @@ class Agenda(m.Model):
     tags = m.ManyToManyField(Tag, related_name='agendas')
 
     @property
-    def vote(self):
+    def vote_count(self):
         agree_count = self.vote_history.filter(value=VoteChoice.AGREE).count()
         not_agree_count = self.vote_history.filter(value=VoteChoice.NOT_AGREE).count()
         not_sure_count = self.vote_history.filter(value=VoteChoice.NOT_SURE).count()
@@ -65,7 +65,7 @@ class Agenda(m.Model):
         history.updown = updown
         history.save()
 
-    def insert_comment(self, user, content):
+    def add_comment(self, user, content):
         comment, created = Comment.objects.get_or_create(agenda=self, writer=user, content=content)
         comment.save()
         return comment
