@@ -2,7 +2,7 @@ from datetime import datetime
 
 from ninja import Schema
 
-from discuss_api.apps.agenda.models import Updown, VoteChoice
+from discuss_api.apps.agenda.models import Updown, VoteChoice, CommentStatus
 from discuss_api.apps.member.schema import UserOut
 
 
@@ -32,6 +32,7 @@ class CommentIn(Schema):
 class CommentOut(Schema):
     id: int
     writer: UserOut
+    status: CommentStatus
     content: str
     created_time: datetime
     updated_time: datetime

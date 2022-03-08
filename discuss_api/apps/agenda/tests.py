@@ -249,6 +249,18 @@ class AgendaTest(TestCase):
         response = client.delete('/api/agendas/1/comments/1/agreement', **headers)
         self.assertEqual(response.status_code, 201)
 
+        response = client.delete('/api/agendas/1/comments/2/agreement', **headers)
+        self.assertEqual(response.status_code, 404)
+
+        other_user = User.objects.create(username='agreementAPI_another_tester')
+        token_for_other = Token.objects.create(user=other_user, value='0th3r_t0k3n')
+
+        # request from not the owner of the comment
+        response = client.delete('/api/agendas/1/comments/1/agreement', **{
+            'HTTP_AUTHORIZATION': f'Bearer {token_for_other.value}'
+        })
+        self.assertEqual(response.status_code, 404)
+
     def test_vote(self):
         user = User.objects.create(username='voteAPI_voter')
         token = Token.objects.create(user=user, value='s4mp13_t0k3n')

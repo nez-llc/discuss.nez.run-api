@@ -20,11 +20,14 @@ class VoteChoice(Enum):
     NOT_SURE = 'not_sure'
 
 
-class CommentStatus(Enum):
-    ACTIVE = 'active'
-    DELETED_BY_USER = 'deleted_by_user'
-    DELETED_BY_ADMIN = 'deleted_by_admin'
-    DELETED_BY_WITHDRAWAL = 'deleted_by_withdrawal'
+class CommentStatus(str, Enum):
+    ACTIVE = 0
+    DELETED_BY_USER = 1
+    DELETED_BY_ADMIN = 2
+    DELETED_BY_WITHDRAWAL = 3
+
+    def __str__(self):
+        return self.name
 
 
 class Agenda(m.Model):
