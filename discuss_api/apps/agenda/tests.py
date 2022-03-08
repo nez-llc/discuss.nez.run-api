@@ -225,7 +225,8 @@ class AgendaTest(TestCase):
         self.assertEqual(response.status_code, 403)
 
         response = client.delete('/api/agendas/1/comments/2', **headers)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json(), 2)
 
     def test_comment_agreement(self):
         user = User.objects.create(username='commentAPI_agreement_user')

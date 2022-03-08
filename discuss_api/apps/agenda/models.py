@@ -20,6 +20,13 @@ class VoteChoice(Enum):
     NOT_SURE = 'not_sure'
 
 
+class CommentStatus(Enum):
+    ACTIVE = 'active'
+    DELETED_BY_USER = 'deleted_by_user'
+    DELETED_BY_ADMIN = 'deleted_by_admin'
+    DELETED_BY_WITHDRAWAL = 'deleted_by_withdrawal'
+
+
 class Agenda(m.Model):
     writer = m.ForeignKey(User, on_delete=m.CASCADE)
     title = m.CharField(max_length=150)
@@ -93,7 +100,11 @@ class Comment(m.Model):
     created_time = m.DateTimeField(auto_now_add=True)
     updated_time = m.DateTimeField(auto_now=True)
 
-    # TODO : 코멘트 상태(회원 삭제, 관리자 삭제, 회원 탈퇴)
+    status = m.CharField(
+        max_length=25,
+        choices=[(status.name, status.value) for status in CommentStatus],
+        default=CommentStatus.ACTIVE
+    )
 
     @property
     def agreement(self):
