@@ -1,9 +1,10 @@
 from django.shortcuts import get_object_or_404
 from ninja import Router
 from ninja.errors import HttpError
+from ninja.pagination import paginate
 
 from discuss_api.apps.agenda.models import Agenda
-from discuss_api.apps.agenda.schema import AgendaOut, UpdownOut, UpdownIn, VoteOut, VoteIn, AgendaIn
+from discuss_api.apps.agenda.schema import AgendaOut, UpdownOut, UpdownIn, VoteOut, VoteIn, AgendaIn, CustomPagination
 from discuss_api.apps.member.auth import TokenAuth
 from discuss_api.apps.tag.models import Tag
 
@@ -12,6 +13,7 @@ api = Router()
 
 
 @api.get('/', response=list[AgendaOut])
+@paginate(CustomPagination)
 def agenda_list_by_tag(request, tag_name: str = None):
     query = Agenda.objects.all()
 

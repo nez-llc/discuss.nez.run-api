@@ -55,6 +55,14 @@ class AgendaTest(TestCase):
 
     def test_agenda(self):
         client = Client()
+        response = client.get('/api/agendas/')
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data['total'], 1)
+        self.assertEqual(data['per_page'], 10)
+        self.assertEqual(data['current_page'], 1)
+
         response = client.get('/api/agendas/1', content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
@@ -164,9 +172,9 @@ class AgendaTest(TestCase):
 
         data = response.json()
 
-        self.assertEqual(data[0]['id'], 1)
-        self.assertEqual(data[0]['title'], SAMPLE_AGENDA_DATA['title'])
-        self.assertEqual(data[0]['tags'][0]['name'], SAMPLE_TAGS[0]['name'])
+        self.assertEqual(data['items'][0]['id'], 1)
+        self.assertEqual(data['items'][0]['title'], SAMPLE_AGENDA_DATA['title'])
+        self.assertEqual(data['items'][0]['tags'][0]['name'], SAMPLE_TAGS[0]['name'])
 
     def test_comment_list(self):
         user = User.objects.create(username='comment_reader')
