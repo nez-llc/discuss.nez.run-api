@@ -1,9 +1,33 @@
 from datetime import datetime
+from typing import List, Any
 
 from ninja import Schema
+from ninja.pagination import PaginationBase
 
 from discuss_api.apps.agenda.models import Updown, VoteChoice, CommentStatus
 from discuss_api.apps.member.schema import UserOut
+
+
+class CustomPagination(PaginationBase):
+    class Input(Schema):
+        skip: int = 0
+        per_page: int = 10
+
+    class Output(Schema):
+        items: List[Any]
+        total: int
+        per_page: int
+        current_page: int
+
+    def paginate_queryset(self, queryset, pagination: Input, **params):
+        skip = pagination.skip
+        per_page = pagination.per_page
+        return {
+            'items': queryset[skip: skip + per_page],
+            'total': queryset.count(),
+            'per_page': per_page,
+            'current_page': (skip + per_page) / per_page,
+        }
 
 
 class UpdownIn(Schema):

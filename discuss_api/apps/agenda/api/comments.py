@@ -6,6 +6,7 @@ from discuss_api.apps.agenda.models import Comment, Agenda, CommentStatus, Agree
 from discuss_api.apps.agenda.schema import CommentOut, CommentIn
 from discuss_api.apps.member.auth import TokenAuth
 
+
 api = Router()
 
 
@@ -23,7 +24,7 @@ def insert_comment(request, agenda_id: int, comment_data: CommentIn):
 
 
 @api.put('/{agenda_id}/comments/{comment_id}', response={201: CommentOut}, auth=TokenAuth())
-def edit_comment(request, comment_id: int, comment_content: CommentIn):
+def edit_comment(request, agenda_id: int, comment_id: int, comment_content: CommentIn):
     comment = get_object_or_404(Comment, id=comment_id)
 
     if not request.auth:
@@ -38,7 +39,7 @@ def edit_comment(request, comment_id: int, comment_content: CommentIn):
 
 
 @api.delete('/{agenda_id}/comments/{comment_id}', response={201: int}, auth=TokenAuth())
-def delete_comment(request, comment_id: int):
+def delete_comment(request, agenda_id: int, comment_id: int):
     comment = get_object_or_404(Comment, id=comment_id)
 
     if not request.auth:
@@ -54,7 +55,7 @@ def delete_comment(request, comment_id: int):
 
 
 @api.post('/{agenda_id}/comments/{comment_id}/agreement', response={201: int}, auth=TokenAuth())
-def add_comment_agreement(request, comment_id: int):
+def add_comment_agreement(request, agenda_id: int, comment_id: int):
     if not request.auth:
         raise HttpError(401, 'Unauthorized')
 
@@ -64,7 +65,7 @@ def add_comment_agreement(request, comment_id: int):
 
 
 @api.delete('/{agenda_id}/comments/{comment_id}/agreement', response={201: int}, auth=TokenAuth())
-def delete_comment_agreement(request, comment_id: int):
+def delete_comment_agreement(request, agenda_id: int, comment_id: int):
     if not request.auth:
         raise HttpError(401, 'Unauthorized')
 
