@@ -20,6 +20,16 @@ class VoteChoice(Enum):
     NOT_SURE = 'not_sure'
 
 
+class CommentStatus(str, Enum):
+    ACTIVE = 0
+    DELETED_BY_USER = 1
+    DELETED_BY_ADMIN = 2
+    DELETED_BY_WITHDRAWAL = 3
+
+    def __str__(self):
+        return self.name
+
+
 class Agenda(m.Model):
     writer = m.ForeignKey(User, on_delete=m.CASCADE)
     title = m.CharField(max_length=150)
@@ -32,7 +42,7 @@ class Agenda(m.Model):
     tags = m.ManyToManyField(Tag, related_name='agendas')
 
     @property
-    def vote(self):
+    def vote_count(self):
         agree_count = self.vote_history.filter(value=VoteChoice.AGREE).count()
         not_agree_count = self.vote_history.filter(value=VoteChoice.NOT_AGREE).count()
         not_sure_count = self.vote_history.filter(value=VoteChoice.NOT_SURE).count()
@@ -65,7 +75,7 @@ class Agenda(m.Model):
         history.updown = updown
         history.save()
 
-    def insert_comment(self, user, content):
+    def add_comment(self, user, content):
         comment, created = Comment.objects.get_or_create(agenda=self, writer=user, content=content)
         comment.save()
         return comment
@@ -93,7 +103,11 @@ class Comment(m.Model):
     created_time = m.DateTimeField(auto_now_add=True)
     updated_time = m.DateTimeField(auto_now=True)
 
-    # TODO : 코멘트 상태(회원 삭제, 관리자 삭제, 회원 탈퇴)
+    status = m.CharField(
+        max_length=25,
+        choices=[(status.name, status.value) for status in CommentStatus],
+        default=CommentStatus.ACTIVE
+    )
 
     @property
     def agreement(self):

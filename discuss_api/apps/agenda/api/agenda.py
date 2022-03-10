@@ -77,4 +77,4 @@ def edit_agenda_updown(request, agenda_id: int, updown: UpdownIn):
 def vote_on_the_agenda(request, agenda_id: int, vote: VoteIn):
     agenda = Agenda.objects.get(id=agenda_id)
     agenda.make_vote(user=request.auth, value=vote.ballot)
-    return agenda.vote
+    return agenda.vote_count

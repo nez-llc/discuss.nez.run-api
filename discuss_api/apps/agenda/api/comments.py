@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from ninja import Router
 from ninja.errors import HttpError
 
-from discuss_api.apps.agenda.models import Comment, Agenda
+from discuss_api.apps.agenda.models import Comment, Agenda, CommentStatus, AgreementHistory
 from discuss_api.apps.agenda.schema import CommentOut, CommentIn
 from discuss_api.apps.member.auth import TokenAuth
 
@@ -16,9 +16,9 @@ def comment_list(request, agenda_id: int):
 
 
 @api.post('/{agenda_id}/comments', response={201: CommentOut}, auth=TokenAuth())
-def insert_comment(request, agenda_id: int, comment_content: CommentIn):
+def insert_comment(request, agenda_id: int, comment_data: CommentIn):
     agenda = get_object_or_404(Agenda, id=agenda_id)
-    comment = agenda.insert_comment(request.auth, comment_content.content)
+    comment = agenda.add_comment(request.auth, comment_data.content)
     return comment
 
 
@@ -37,20 +37,44 @@ def edit_comment(request, comment_id: int, comment_content: CommentIn):
     return comment
 
 
-@api.delete('/{agenda_id}/comments/{comment_id}', auth=TokenAuth())
+@api.delete('/{agenda_id}/comments/{comment_id}', response={201: int}, auth=TokenAuth())
 def delete_comment(request, comment_id: int):
-    Comment.objects.get(id=comment_id, writer=request.auth).delete()
+    comment = get_object_or_404(Comment, id=comment_id)
+
+    if not request.auth:
+        raise HttpError(401, 'Unauthorized')
+
+    if request.auth != comment.writer:
+        raise HttpError(403, "You don't have permission to access")
+
+    comment.status = CommentStatus.DELETED_BY_USER
+    comment.save()
+
+    return comment.id
 
 
 @api.post('/{agenda_id}/comments/{comment_id}/agreement', response={201: int}, auth=TokenAuth())
 def add_comment_agreement(request, comment_id: int):
-    comment = Comment.objects.get(id=comment_id)
+    if not request.auth:
+        raise HttpError(401, 'Unauthorized')
+
+    comment = get_object_or_404(Comment, id=comment_id)
     comment.add_agreement(request.auth)
     return comment.agreement
 
 
 @api.delete('/{agenda_id}/comments/{comment_id}/agreement', response={201: int}, auth=TokenAuth())
 def delete_comment_agreement(request, comment_id: int):
-    comment = Comment.objects.get(id=comment_id, writer=request.auth)
-    comment.delete_agreement(request.auth)
+    if not request.auth:
+        raise HttpError(401, 'Unauthorized')
+
+    comment = get_object_or_404(Comment, id=comment_id)
+    agreement_history = get_object_or_404(AgreementHistory, comment=comment, voter=request.auth)
+
+    if request.auth != agreement_history.voter:
+        raise HttpError(403, "You don't have permission to access")
+
+    if agreement_history:
+        comment.delete_agreement(request.auth)
+
     return comment.agreement

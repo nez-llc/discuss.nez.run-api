@@ -64,6 +64,8 @@ class AgendaTest(TestCase):
         self.assertEqual(data['title'], SAMPLE_AGENDA_DATA['title'])
         self.assertEqual(data['summary'], SAMPLE_AGENDA_DATA['summary'])
         self.assertEqual(data['desc'], SAMPLE_AGENDA_DATA['desc'])
+        self.assertEqual(data['updown'], {'total': 0, 'up': 0, 'down': 0})
+        self.assertEqual(data['vote_count'], {'agree': 0, 'not_agree': 0, 'not_sure': 0})
 
     def test_agenda_update(self):
         writer = User.objects.create(username='agendaAPI_tester')
@@ -170,7 +172,7 @@ class AgendaTest(TestCase):
         user = User.objects.create(username='comment_reader')
 
         agenda = self.agenda
-        agenda.insert_comment(agenda, user, '우와아아아앙ㅇ')
+        agenda.add_comment(user, '우와아아아앙ㅇ')
 
         client = Client()
 
@@ -195,7 +197,7 @@ class AgendaTest(TestCase):
         self.assertEqual(response.status_code, 201)
 
         response = client.post('/api/agendas/1/comments', {
-            'content': 'test content 2, Django Ninja allows you to define the schema of your responses both for validation and documentation purposes.',
+            'content': '정책 토론을 위한 댓글 등록 테스트 코드이다. Test content for discuss agenda service~ insert new comment',
         }, content_type='application/json', **headers)
         self.assertEqual(response.status_code, 201)
 
@@ -223,7 +225,8 @@ class AgendaTest(TestCase):
         self.assertEqual(response.status_code, 403)
 
         response = client.delete('/api/agendas/1/comments/2', **headers)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json(), 2)
 
     def test_comment_agreement(self):
         user = User.objects.create(username='commentAPI_agreement_user')
@@ -246,6 +249,18 @@ class AgendaTest(TestCase):
         response = client.delete('/api/agendas/1/comments/1/agreement', **headers)
         self.assertEqual(response.status_code, 201)
 
+        response = client.delete('/api/agendas/1/comments/2/agreement', **headers)
+        self.assertEqual(response.status_code, 404)
+
+        other_user = User.objects.create(username='agreementAPI_another_tester')
+        token_for_other = Token.objects.create(user=other_user, value='0th3r_t0k3n')
+
+        # request from not the owner of the comment
+        response = client.delete('/api/agendas/1/comments/1/agreement', **{
+            'HTTP_AUTHORIZATION': f'Bearer {token_for_other.value}'
+        })
+        self.assertEqual(response.status_code, 404)
+
     def test_vote(self):
         user = User.objects.create(username='voteAPI_voter')
         token = Token.objects.create(user=user, value='s4mp13_t0k3n')
@@ -266,5 +281,12 @@ class AgendaTest(TestCase):
 
     def test_statistics(self):
         client = Client()
+
         response = client.get('/api/statistics/')
+
         self.assertEqual(response.status_code, 200)
+
+        data = response.json()
+        self.assertEqual(data['agenda_count'], 1)
+        self.assertEqual(data['comment_count'], 0)
+        self.assertEqual(data['vote_count'], 0)

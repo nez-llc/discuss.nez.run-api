@@ -1,7 +1,7 @@
 from ninja import Router
 
 from discuss_api.apps.agenda.models import Agenda, Comment, Vote
-from discuss_api.apps.agenda.schema import StatisticsOut
+from discuss_api.apps.statistic.schema import StatisticsOut
 
 
 api = Router()
@@ -9,7 +9,7 @@ api = Router()
 
 @api.get('/', response=StatisticsOut)
 def agenda_list_by_tag(request):
-    agenda_count = Agenda.objects.all().count()
+    agenda_count = Agenda.objects.count()
     comment_count = Comment.objects.count()
     vote_count = Vote.objects.count()
 
