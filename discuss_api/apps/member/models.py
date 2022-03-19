@@ -19,3 +19,7 @@ class UserProfile(m.Model):
 
     def __str__(self):
         return self.nickname
+
+    def clear_contents(self):
+        self.nickname = ''
+        self.save()

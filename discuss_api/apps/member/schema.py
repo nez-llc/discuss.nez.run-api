@@ -1,6 +1,10 @@
 from ninja import Schema
-
 from discuss_api.apps.member.models import UserProfile
+
+
+class UserIn(Schema):
+    nickname: str
+    picture_id: Optional[str]
 
 
 class UserOut(Schema):
