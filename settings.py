@@ -4,7 +4,6 @@ from pathlib import Path
 import dj_database_url
 from dotenv import load_dotenv
 
-
 load_dotenv('.env.local')
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -86,5 +85,9 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+GS_BUCKET_NAME = os.environ.get('BUCKET_NAME')
+GS_QUERYSTRING_AUTH = False
+GS_FILE_OVERWRITE = False
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
