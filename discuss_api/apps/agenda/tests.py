@@ -190,6 +190,7 @@ class AgendaTest(TestCase):
 
     def test_comment(self):
         user = User.objects.create(username='commentAPI_writer')
+        UserProfile.objects.create(user=user, nickname=user.username)
 
         token = Token.objects.create(user=user, value='s4mp13_t0k3n')
 
@@ -222,6 +223,7 @@ class AgendaTest(TestCase):
         self.assertEqual(response.status_code, 201)
 
         other_user = User.objects.create(username='commentAPI_another_tester')
+        UserProfile.objects.create(user=other_user, nickname=other_user.username)
         token_for_other = Token.objects.create(user=other_user, value='0th3r_t0k3n')
 
         # request from not the owner of the comment
@@ -234,11 +236,11 @@ class AgendaTest(TestCase):
 
         response = client.delete('/api/agendas/1/comments/2', **headers)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.json(), 2)
+        self.assertEqual(response.json()['deleted_comment_id'], 2)
 
     def test_comment_agreement(self):
         user = User.objects.create(username='commentAPI_agreement_user')
-
+        UserProfile.objects.create(user=user, nickname=user.username)
         token = Token.objects.create(user=user, value='s4mp13_t0k3n')
 
         headers = {
@@ -261,6 +263,7 @@ class AgendaTest(TestCase):
         self.assertEqual(response.status_code, 404)
 
         other_user = User.objects.create(username='agreementAPI_another_tester')
+        UserProfile.objects.create(user=other_user, nickname=other_user.username)
         token_for_other = Token.objects.create(user=other_user, value='0th3r_t0k3n')
 
         # request from not the owner of the comment

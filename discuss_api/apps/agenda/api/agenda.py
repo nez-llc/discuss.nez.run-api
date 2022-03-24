@@ -53,7 +53,7 @@ def edit_agenda(request, agenda_id: int, agenda_in: AgendaIn):
         raise HttpError(401, 'Unauthorized')
 
     if request.auth != agenda.writer:
-        raise HttpError(403, "You don't have permission to access")
+        raise HttpError(403, 'You don\'t have permission to access')
 
     agenda.title = agenda_in.title
     agenda.summary = agenda_in.summary
