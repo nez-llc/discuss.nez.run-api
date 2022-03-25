@@ -22,8 +22,6 @@ class UserOut(Schema):
 
     @staticmethod
     def resolve_picture(obj):
-        print(obj.profile)
-        print(obj.profile.picture)
         if obj.profile.picture.file:
             return obj.profile.picture.file.url
         else:
