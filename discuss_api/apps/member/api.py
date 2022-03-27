@@ -58,10 +58,10 @@ def get_my_agendas(request):
 
 @api.put('/my', response={201: UserOut}, auth=TokenAuth())
 def edit_my(request, member_data: UserIn):
-    profile = get_object_or_404(UserProfile, user=request.auth)
-
     if not request.auth:
         raise HttpError(401, 'Unauthorized')
+
+    profile = request.auth.profile
 
     profile.nickname = member_data.nickname
     profile.picture_id = member_data.picture_id

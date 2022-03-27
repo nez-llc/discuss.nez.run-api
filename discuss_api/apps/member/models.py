@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models as m
+from django.db.models import signals
+from django.dispatch import receiver
 
 
 User = get_user_model()
@@ -34,3 +36,16 @@ class UserProfile(m.Model):
         self.nickname = ''
         self.picture = ''
         self.save()
+
+
+def generate_default_nickname(user):
+    return 'default'
+
+
+@receiver(signals.post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(
+            user=instance,
+            nickname=generate_default_nickname(instance),
+        )

@@ -1,10 +1,12 @@
 from os import path
-from django.contrib.auth.models import User
 from django.test import TestCase, Client
+from django.contrib.auth import get_user_model
 from discuss_api.apps.member.models import UserProfile, Token
 
 
 TESTS_DIR = path.dirname(__file__)
+
+User = get_user_model()
 
 
 class MemberTest(TestCase):
@@ -44,3 +46,7 @@ class MemberTest(TestCase):
             'picture_id': file_id,
         }, content_type='application/json', **self.authorized_headers)
         self.assertEqual(response.status_code, 201)
+
+    def test_profile_crated_with_user(self):
+        user = User.objects.create(username='tester')
+        self.assertEqual(type(user.profile), UserProfile)
