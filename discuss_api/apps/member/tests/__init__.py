@@ -17,14 +17,8 @@ class MemberTest(TestCase):
             'HTTP_AUTHORIZATION': f'Bearer {token.value}'
         }
 
+        # Image from https://commons.wikimedia.org/wiki/File:VAN_CAT.png (CC BY-SA 4.0)
         self.file_path = path.join(TESTS_DIR, 'cat_free.jpg')
-        # picture = SimpleUploadedFile(name='picture.jpg', content=open(file_path, 'rb').read())
-
-        UserProfile.objects.create(
-            user=self.user,
-            nickname=self.user.username,
-            # picture=picture,
-        )
 
     def test_mypage(self):
         client = Client()
