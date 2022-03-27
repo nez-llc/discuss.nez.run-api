@@ -32,4 +32,5 @@ class UserProfile(m.Model):
 
     def clear_contents(self):
         self.nickname = ''
+        self.picture = ''
         self.save()
