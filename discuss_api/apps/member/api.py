@@ -40,7 +40,6 @@ def get_my_member(request):
 
 @api.get('/my/comments', response={200: list[CommentOut]}, auth=TokenAuth())
 def get_my_comments(request):
-
     if not request.auth:
         raise HttpError(401, 'Unauthorized')
 
@@ -50,7 +49,6 @@ def get_my_comments(request):
 
 @api.get('/my/agenda', response={200: list[AgendaOut]}, auth=TokenAuth())
 def get_my_agendas(request):
-
     if not request.auth:
         raise HttpError(401, 'Unauthorized')
 
