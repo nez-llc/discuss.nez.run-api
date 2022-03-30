@@ -63,6 +63,14 @@ class CommentOut(Schema):
     agreement: int
 
 
+class CommentAgreementOut(Schema):
+    total_agreement: int
+
+
+class DeleteCommentOut(Schema):
+    deleted_comment_id: int
+
+
 class VoteIn(Schema):
     ballot: VoteChoice
 

@@ -3,7 +3,7 @@ from ninja import Router
 from ninja.errors import HttpError
 
 from discuss_api.apps.agenda.models import Comment, Agenda, CommentStatus, AgreementHistory
-from discuss_api.apps.agenda.schema import CommentOut, CommentIn
+from discuss_api.apps.agenda.schema import CommentOut, CommentIn, DeleteCommentOut, CommentAgreementOut
 from discuss_api.apps.member.auth import TokenAuth
 
 
@@ -25,46 +25,44 @@ def insert_comment(request, agenda_id: int, comment_data: CommentIn):
 
 @api.put('/{agenda_id}/comments/{comment_id}', response={201: CommentOut}, auth=TokenAuth())
 def edit_comment(request, agenda_id: int, comment_id: int, comment_content: CommentIn):
-    comment = get_object_or_404(Comment, id=comment_id)
-
     if not request.auth:
         raise HttpError(401, 'Unauthorized')
 
+    comment = get_object_or_404(Comment, id=comment_id)
     if request.auth != comment.writer:
-        raise HttpError(403, "You don't have permission to access")
+        raise HttpError(403, 'You don\'t have permission to access')
 
     comment.content = comment_content.content
     comment.save()
     return comment
 
 
-@api.delete('/{agenda_id}/comments/{comment_id}', response={201: int}, auth=TokenAuth())
+@api.delete('/{agenda_id}/comments/{comment_id}', response={201: DeleteCommentOut}, auth=TokenAuth())
 def delete_comment(request, agenda_id: int, comment_id: int):
-    comment = get_object_or_404(Comment, id=comment_id)
-
     if not request.auth:
         raise HttpError(401, 'Unauthorized')
 
+    comment = get_object_or_404(Comment, id=comment_id)
     if request.auth != comment.writer:
-        raise HttpError(403, "You don't have permission to access")
+        raise HttpError(403, 'You don\'t have permission to access')
 
     comment.status = CommentStatus.DELETED_BY_USER
     comment.save()
 
-    return comment.id
+    return 201, {'deleted_comment_id': comment.id}
 
 
-@api.post('/{agenda_id}/comments/{comment_id}/agreement', response={201: int}, auth=TokenAuth())
+@api.post('/{agenda_id}/comments/{comment_id}/agreement', response={201: CommentAgreementOut}, auth=TokenAuth())
 def add_comment_agreement(request, agenda_id: int, comment_id: int):
     if not request.auth:
         raise HttpError(401, 'Unauthorized')
 
     comment = get_object_or_404(Comment, id=comment_id)
     comment.add_agreement(request.auth)
-    return comment.agreement
+    return 201, {'total_agreement': comment.agreement}
 
 
-@api.delete('/{agenda_id}/comments/{comment_id}/agreement', response={201: int}, auth=TokenAuth())
+@api.delete('/{agenda_id}/comments/{comment_id}/agreement', response={201: CommentAgreementOut}, auth=TokenAuth())
 def delete_comment_agreement(request, agenda_id: int, comment_id: int):
     if not request.auth:
         raise HttpError(401, 'Unauthorized')
@@ -73,9 +71,9 @@ def delete_comment_agreement(request, agenda_id: int, comment_id: int):
     agreement_history = get_object_or_404(AgreementHistory, comment=comment, voter=request.auth)
 
     if request.auth != agreement_history.voter:
-        raise HttpError(403, "You don't have permission to access")
+        raise HttpError(403, 'You don\'t have permission to access')
 
     if agreement_history:
         comment.delete_agreement(request.auth)
 
-    return comment.agreement
+    return 201, {'total_agreement': comment.agreement}
