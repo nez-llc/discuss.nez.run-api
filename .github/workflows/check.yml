@@ -35,5 +35,7 @@ jobs:
           poetry install
       - name: "Run test"
         run: coverage run manage.py test
+        env:
+          DB_CONNECTION_URL: ${{ secrets.DB_CONNECTION_URL }}
       - name: "Print coverage report"
         run: coverage report
