@@ -4,7 +4,7 @@ from ninja.errors import HttpError
 
 from discuss_api.apps.agenda.models import Comment, Agenda, CommentStatus, AgreementHistory
 from discuss_api.apps.agenda.schema import CommentOut, CommentIn, DeleteCommentOut, CommentAgreementOut
-from discuss_api.apps.member.auth import TokenAuth
+from discuss_api.apps.multi_auth.auth import TokenAuth
 
 
 api = Router()

@@ -5,7 +5,7 @@ from ninja.pagination import paginate
 
 from discuss_api.apps.agenda.models import Agenda
 from discuss_api.apps.agenda.schema import AgendaOut, UpdownOut, UpdownIn, VoteOut, VoteIn, AgendaIn, CustomPagination
-from discuss_api.apps.member.auth import TokenAuth
+from discuss_api.apps.multi_auth.auth import TokenAuth
 from discuss_api.apps.tag.models import Tag
 
 
