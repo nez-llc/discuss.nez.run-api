@@ -5,13 +5,6 @@ from django.db import models as m
 User = get_user_model()
 
 
-class Token(m.Model):
-    user = m.ForeignKey(User, on_delete=m.CASCADE)
-    value = m.CharField(max_length=256)
-    time_created = m.DateTimeField(auto_now_add=True)
-    # TODO : time_expired
-
-
 class ProfilePicture(m.Model):
     profile = m.ForeignKey('UserProfile', on_delete=m.CASCADE)
     file = m.ImageField(upload_to='profile-pictures')

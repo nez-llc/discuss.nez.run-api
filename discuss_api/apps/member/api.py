@@ -6,7 +6,7 @@ from ninja.errors import HttpError
 
 from discuss_api.apps.agenda.models import Comment, Agenda, CommentStatus
 from discuss_api.apps.agenda.schema import CommentOut, AgendaOut
-from discuss_api.apps.member.auth import TokenAuth
+from discuss_api.apps.multi_auth.auth import TokenAuth
 from discuss_api.apps.member.models import UserProfile, ProfilePicture
 from discuss_api.apps.member.schema import UserOut, UserIn
 
@@ -50,7 +50,6 @@ def get_my_comments(request):
 
 @api.get('/my/agenda', response={200: list[AgendaOut]}, auth=TokenAuth())
 def get_my_agendas(request):
-
     if not request.auth:
         raise HttpError(401, 'Unauthorized')
 

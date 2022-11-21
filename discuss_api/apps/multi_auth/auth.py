@@ -1,6 +1,6 @@
 from ninja.security import HttpBearer
 
-from discuss_api.apps.member.models import Token
+from discuss_api.apps.multi_auth.models import Token
 
 
 class TokenAuth(HttpBearer):
