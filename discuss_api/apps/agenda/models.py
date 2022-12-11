@@ -5,7 +5,6 @@ from django.db import models as m
 
 from discuss_api.apps.tag.models import Tag
 
-
 User = get_user_model()
 
 
@@ -79,6 +78,10 @@ class Agenda(m.Model):
         comment, created = Comment.objects.get_or_create(agenda=self, writer=user, content=content)
         comment.save()
         return comment
+
+    @property
+    def comment_count(self):
+        return self.comments.filter(status=CommentStatus.ACTIVE).count()
 
     def __str__(self):
         return self.title

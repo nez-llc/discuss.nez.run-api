@@ -99,3 +99,4 @@ class AgendaOut(Schema):
     tags: list[TagOut]
     updown: UpdownOut
     vote_count: VoteOut
+    comment_count: int
