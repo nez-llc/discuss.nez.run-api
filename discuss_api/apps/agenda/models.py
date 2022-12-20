@@ -11,6 +11,7 @@ User = get_user_model()
 class Updown(str, Enum):
     UP = 'up'
     DOWN = 'down'
+    NONE = None
 
 
 class VoteChoice(Enum):
@@ -82,6 +83,12 @@ class Agenda(m.Model):
     @property
     def comment_count(self):
         return self.comments.filter(status=CommentStatus.ACTIVE).count()
+
+    def check_updown(self, user):
+        try:
+            self.my_updown = UpdownHistory.objects.get(agenda=self, voter=user).updown
+        except UpdownHistory.DoesNotExist:
+            self.my_updown = Updown.NONE
 
     def __str__(self):
         return self.title

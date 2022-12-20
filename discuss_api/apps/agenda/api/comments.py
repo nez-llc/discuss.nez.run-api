@@ -12,7 +12,7 @@ api = Router()
 
 @api.get('/{agenda_id}/comments', response=list[CommentOut])
 def comment_list(request, agenda_id: int):
-    comments = Comment.objects.filter(agenda__id=agenda_id, status=CommentStatus.ACTIVE)
+    comments = Comment.objects.filter(agenda__id=agenda_id)
     return comments
 
 

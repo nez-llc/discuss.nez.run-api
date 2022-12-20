@@ -3,8 +3,9 @@ from ninja import Router
 from ninja.errors import HttpError
 from ninja.pagination import paginate
 
-from discuss_api.apps.agenda.models import Agenda
-from discuss_api.apps.agenda.schema import AgendaOut, UpdownOut, UpdownIn, VoteOut, VoteIn, AgendaIn, CustomPagination
+from discuss_api.apps.agenda.models import Agenda, User
+from discuss_api.apps.agenda.schema import AgendaOut, UpdownOut, UpdownIn, VoteOut, VoteIn, AgendaIn, CustomPagination, \
+    AgendaDetailOut
 from discuss_api.apps.multi_auth.auth import TokenAuth
 from discuss_api.apps.tag.models import Tag
 
@@ -23,9 +24,14 @@ def agenda_list_by_tag(request, tag_name: str = None):
     return query
 
 
-@api.get('/{agenda_id}', response=AgendaOut)
+@api.get('/{agenda_id}', response=AgendaDetailOut,  auth=TokenAuth())
 def get_agenda(request, agenda_id: int):
     agenda = get_object_or_404(Agenda, id=agenda_id)
+
+    # auth = User(TokenAuth())
+    if request.auth:
+        agenda.check_updown(request.auth)
+
     return agenda
 
 
