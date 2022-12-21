@@ -86,9 +86,9 @@ class Agenda(m.Model):
 
     def check_updown(self, user):
         try:
-            self.my_updown = UpdownHistory.objects.get(agenda=self, voter=user).updown
+            return UpdownHistory.objects.get(agenda=self, voter=user).updown
         except UpdownHistory.DoesNotExist:
-            self.my_updown = Updown.NONE
+            return Updown.NONE
 
     def __str__(self):
         return self.title

@@ -101,16 +101,6 @@ class AgendaOut(Schema):
     vote_count: VoteOut
     comment_count: int
 
-class AgendaDetailOut(Schema):
-    id: int
-    writer: UserOut
-    title: str
-    summary: str
-    desc: str
-    created_time: datetime
-    updated_time: datetime
-    tags: list[TagOut]
-    updown: UpdownOut
-    vote_count: VoteOut
-    comment_count: int
+
+class AgendaMyOut(Schema):
     my_updown: Updown
