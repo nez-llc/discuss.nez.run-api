@@ -18,7 +18,6 @@ api = Router()
 def agenda_list_by_tag(request, tag_name: str = None):
     query = Agenda.objects.all()
 
-    print(query)
     if tag_name:
         query = query.filter(tags__name=tag_name)
 
