@@ -15,11 +15,17 @@ api = Router()
 
 @api.get('/', response=list[AgendaOut])
 @paginate(CustomPagination)
-def agenda_list_by_tag(request, tag_name: str = None):
+def agenda_list_by_tag(request, tag_name: str = None, keyword: str = None):
     query = Agenda.objects.all()
 
     if tag_name:
         query = query.filter(tags__name=tag_name)
+
+    if keyword:
+        query = query.filter(title__contains=keyword) \
+                | query.filter(summary__contains=keyword) \
+                | query.filter(desc__contains=keyword)
+
 
     return query
 
