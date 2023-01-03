@@ -5,13 +5,13 @@ from django.db import models as m
 
 from discuss_api.apps.tag.models import Tag
 
-
 User = get_user_model()
 
 
 class Updown(str, Enum):
     UP = 'up'
     DOWN = 'down'
+    NONE = None
 
 
 class VoteChoice(Enum):
@@ -79,6 +79,16 @@ class Agenda(m.Model):
         comment, created = Comment.objects.get_or_create(agenda=self, writer=user, content=content)
         comment.save()
         return comment
+
+    @property
+    def comment_count(self):
+        return self.comments.filter(status=CommentStatus.ACTIVE).count()
+
+    def check_updown(self, user):
+        try:
+            return UpdownHistory.objects.get(agenda=self, voter=user).updown
+        except UpdownHistory.DoesNotExist:
+            return Updown.NONE
 
     def __str__(self):
         return self.title

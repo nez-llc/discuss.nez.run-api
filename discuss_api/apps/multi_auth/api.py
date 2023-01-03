@@ -1,4 +1,4 @@
-from pyfacebook import GraphAPI
+
 from ninja import Router, Schema
 
 from discuss_api.apps.multi_auth.models import OAuth
