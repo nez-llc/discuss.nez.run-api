@@ -3,8 +3,9 @@ from ninja import Router
 from ninja.errors import HttpError
 from ninja.pagination import paginate
 
-from discuss_api.apps.agenda.models import Agenda
-from discuss_api.apps.agenda.schema import AgendaOut, UpdownOut, UpdownIn, VoteOut, VoteIn, AgendaIn, CustomPagination
+from discuss_api.apps.agenda.models import Agenda, User
+from discuss_api.apps.agenda.schema import AgendaOut, UpdownOut, UpdownIn, VoteOut, VoteIn, AgendaIn, CustomPagination, \
+    AgendaMyOut
 from discuss_api.apps.multi_auth.auth import TokenAuth
 from discuss_api.apps.tag.models import Tag
 
@@ -14,11 +15,17 @@ api = Router()
 
 @api.get('/', response=list[AgendaOut])
 @paginate(CustomPagination)
-def agenda_list_by_tag(request, tag_name: str = None):
+def agenda_list_by_tag(request, tag_name: str = None, keyword: str = None):
     query = Agenda.objects.all()
 
     if tag_name:
         query = query.filter(tags__name=tag_name)
+
+    if keyword:
+        query = query.filter(title__contains=keyword) \
+                | query.filter(summary__contains=keyword) \
+                | query.filter(desc__contains=keyword)
+
 
     return query
 
@@ -26,7 +33,18 @@ def agenda_list_by_tag(request, tag_name: str = None):
 @api.get('/{agenda_id}', response=AgendaOut)
 def get_agenda(request, agenda_id: int):
     agenda = get_object_or_404(Agenda, id=agenda_id)
+
     return agenda
+
+
+@api.get('/{agenda_id}/my', response=AgendaMyOut, auth=TokenAuth())
+def get_agenda(request, agenda_id: int):
+    if not request.auth:
+        raise HttpError(401, 'Unauthorized')
+
+    agenda = get_object_or_404(Agenda, id=agenda_id)
+
+    return {'my_updown': agenda.check_updown(request.auth)}
 
 
 @api.post('/', response={201: AgendaOut}, auth=TokenAuth())
