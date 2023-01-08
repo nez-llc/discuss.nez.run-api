@@ -15,7 +15,7 @@ api = Router()
 
 @api.get('/', response=list[AgendaOut])
 @paginate(CustomPagination)
-def agenda_list_by_tag(request, tag_name: str = None, keyword: str = None):
+def agenda_list_by_tag(request, tag_name: str = None, keyword: str = None, sort: str = None):
     query = Agenda.objects.all()
 
     if tag_name:
@@ -25,6 +25,9 @@ def agenda_list_by_tag(request, tag_name: str = None, keyword: str = None):
         query = query.filter(title__contains=keyword) \
                 | query.filter(summary__contains=keyword) \
                 | query.filter(desc__contains=keyword)
+
+    if sort == 'recommend':
+        query = query.order_by('-recommend')
 
 
     return query
