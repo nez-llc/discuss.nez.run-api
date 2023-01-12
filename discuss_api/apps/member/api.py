@@ -12,29 +12,28 @@ from discuss_api.apps.member.schema import UserOut, UserIn
 
 from google.cloud import storage
 
-
 api = Router()
 
 
 @api.post('/files', auth=TokenAuth())
-def upload(request, file: UploadedFile = File(...)):
+def upload(request, file: UploadedFile):
     if not request.auth:
         raise HttpError(401, '')
 
     storage_client = storage.Client()
     bucket = storage_client.bucket('discuss-test-static')
-    blob = bucket.blob('profile_pictures/' + file.name)
+    blob = bucket.blob('profile-pictures/' + file.name)
 
     blob.upload_from_file(file.file, content_type=file.content_type)
 
     picture = ProfilePicture.objects.create(
         profile=request.auth.profile,
-        file=file.name
+        file=blob.public_url
     )
 
     return {
         'file_id': picture.id,
-        'url': picture.url,
+        'url': picture.file,
     }
 
 

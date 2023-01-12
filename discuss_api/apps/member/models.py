@@ -7,14 +7,11 @@ User = get_user_model()
 
 class ProfilePicture(m.Model):
     profile = m.ForeignKey('UserProfile', on_delete=m.CASCADE)
-    file = m.CharField(max_length=200)
+    file = m.CharField(max_length=1000)
     time_created = m.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.file
-
-    def url(self):
-        return 'https://storage.googleapis.com/discuss-test-static/profile-pictures/' + self.file
 
 
 class UserProfile(m.Model):

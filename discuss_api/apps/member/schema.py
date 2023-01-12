@@ -25,7 +25,7 @@ class UserOut(Schema):
     def resolve_picture(obj):
         try:
             if obj.profile.picture:
-                return obj.profile.picture.file.url
+                return obj.profile.picture.file
             else:
                 return None
         except UserProfile.DoesNotExist:
