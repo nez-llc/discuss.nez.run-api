@@ -14,24 +14,11 @@ def exchange_token(tokens):
 
     result = resp.json()
 
-
-    # real_resp = requests.get(
-    #     'https://graph.facebook.com/v4.0/' + result['id'],
-    #     params={
-    #         'fields': 'id,email,updated_time',
-    #         'access_token': tokens['access_token'],
-    #     })
-    #
-    # real_result = resp.json()
-    #
-    # print(real_result)
-    # print(tokens['access_token'])
-
     with transaction.atomic():
         try:
             auth = OAuth.objects.get(provider='facebook', id_on_provider=result['id'])
         except OAuth.DoesNotExist:
-            user = User.objects.create(email=uuid.uuid4().hex + '@nez.wtf', username=uuid.uuid4())
+            user = User.objects.create(email=result['email'], username=uuid.uuid4())
             auth = OAuth.objects.create(provider='facebook', id_on_provider=result['id'], user=user)
 
     return auth
