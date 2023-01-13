@@ -30,6 +30,15 @@ class CommentStatus(str, Enum):
         return self.name
 
 
+class AgendaPicture(m.Model):
+    agenda = m.ForeignKey('Agenda', on_delete=m.CASCADE)
+    file = m.CharField(max_length=1000)
+    time_created = m.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.file
+
+
 class Agenda(m.Model):
     writer = m.ForeignKey(User, on_delete=m.CASCADE)
     title = m.CharField(max_length=150)
@@ -40,6 +49,8 @@ class Agenda(m.Model):
     updated_time = m.DateTimeField(auto_now=True)
 
     tags = m.ManyToManyField(Tag, related_name='agendas')
+    picture = m.ForeignKey(AgendaPicture, on_delete=m.CASCADE, null=True, blank=True, related_name='agenda_picture')
+
 
     @property
     def vote_count(self):
