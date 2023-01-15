@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'discuss_api.apps.status',
     'discuss_api.apps.agenda',
     'discuss_api.apps.tag',
+    'discuss_api.apps.multi_auth',
     'discuss_api.apps.member',
     'discuss_api.apps.multi_auth',
 ]

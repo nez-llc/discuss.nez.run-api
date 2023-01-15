@@ -16,7 +16,7 @@ django-cors-headers = "^3.11.0"
 gunicorn = "^20.1.0"
 Pillow = "^9.0.1"
 django-storages = {extras = ["google"], version = "^1.12.3"}
-pyfacebook = "^0.3"
+python-facebook-api = "^0.15.0"
 tweepy = "^4.12.1"
 
 [tool.poetry.dev-dependencies]
