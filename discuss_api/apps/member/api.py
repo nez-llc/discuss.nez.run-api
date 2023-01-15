@@ -40,7 +40,6 @@ def get_my_member(request):
 
 @api.get('/my/comments', response={200: list[CommentOut]}, auth=TokenAuth())
 def get_my_comments(request):
-
     if not request.auth:
         raise HttpError(401, 'Unauthorized')
 
@@ -59,7 +58,7 @@ def get_my_agendas(request):
 
 @api.put('/my', response={201: UserOut}, auth=TokenAuth())
 def edit_my(request, member_data: UserIn):
-    profile = get_object_or_404(UserProfile, user=request.auth)
+    profile, created = UserProfile.objects.get_or_create(user=request.auth)
 
     if not request.auth:
         raise HttpError(401, 'Unauthorized')
