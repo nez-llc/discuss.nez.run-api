@@ -1,7 +1,7 @@
 from datetime import datetime
-from typing import List, Any
+from typing import List, Any, Optional
 
-from ninja import Schema
+from ninja import Schema, UploadedFile
 from ninja.pagination import PaginationBase
 
 from discuss_api.apps.agenda.models import Updown, VoteChoice, CommentStatus
@@ -86,6 +86,7 @@ class AgendaIn(Schema):
     summary: str
     desc: str
     tags: list[TagIn] = []
+    picture: Optional[UploadedFile]
 
 
 class AgendaOut(Schema):
@@ -99,3 +100,4 @@ class AgendaOut(Schema):
     tags: list[TagOut]
     updown: UpdownOut
     vote_count: VoteOut
+    picture: Optional[str]

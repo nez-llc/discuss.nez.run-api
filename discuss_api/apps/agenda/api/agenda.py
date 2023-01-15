@@ -1,9 +1,10 @@
 from django.shortcuts import get_object_or_404
+from google.cloud import storage
 from ninja import Router
 from ninja.errors import HttpError
 from ninja.pagination import paginate
 
-from discuss_api.apps.agenda.models import Agenda
+from discuss_api.apps.agenda.models import Agenda, AgendaPicture
 from discuss_api.apps.agenda.schema import AgendaOut, UpdownOut, UpdownIn, VoteOut, VoteIn, AgendaIn, CustomPagination
 from discuss_api.apps.multi_auth.auth import TokenAuth
 from discuss_api.apps.tag.models import Tag
@@ -31,6 +32,7 @@ def get_agenda(request, agenda_id: int):
 
 @api.post('/', response={201: AgendaOut}, auth=TokenAuth())
 def insert_agenda(request, agenda_in: AgendaIn):
+
     agenda = Agenda.objects.create(
         writer=request.auth,
         title=agenda_in.title,
@@ -41,6 +43,17 @@ def insert_agenda(request, agenda_in: AgendaIn):
     for tag_id in agenda_in.tags:
         tag = Tag.objects.get(tag_id)
         agenda.tags.add(tag)
+
+    if agenda_in.picture:
+        storage_client = storage.Client()
+        bucket = storage_client.bucket('discuss-test-static')
+        blob = bucket.blob('agenda-pictures/' + agenda_in.picture.name)
+
+        blob.upload_from_file(agenda_in.picture.file, content_type=agenda_in.picture.content_type)
+        picture = AgendaPicture.objects.create(
+            agenda=agenda,
+            file=blob.public_url
+        )
 
     return agenda
 
