@@ -11,7 +11,7 @@ class ProfilePicture(m.Model):
     time_created = m.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.file.url
+        return self.file.name
 
 
 class UserProfile(m.Model):

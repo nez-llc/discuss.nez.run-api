@@ -12,6 +12,7 @@ class UserOut(Schema):
     id: int
     nickname: str
     picture: Optional[str]
+    picture_id: Optional[str]
 
     @staticmethod
     def resolve_nickname(obj):
@@ -22,8 +23,20 @@ class UserOut(Schema):
 
     @staticmethod
     def resolve_picture(obj):
-        return ''
-        # if obj.profile.picture:
-        #     return obj.profile.picture.file.url
-        # else:
-        #     return None
+        try:
+            if obj.profile.picture:
+                return obj.profile.picture.file.url
+            else:
+                return None
+        except UserProfile.DoesNotExist:
+            return ''
+
+    @staticmethod
+    def resolve_picture_id(obj):
+        try:
+            if obj.profile.picture:
+                return obj.profile.picture.id
+            else:
+                return None
+        except UserProfile.DoesNotExist:
+            return ''
