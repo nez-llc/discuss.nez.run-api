@@ -3,7 +3,7 @@ from ninja import Router
 from ninja.errors import HttpError
 from ninja.pagination import paginate
 
-from discuss_api.apps.agenda.models import Agenda, User
+from discuss_api.apps.agenda.models import Agenda, User, SearchType
 from discuss_api.apps.agenda.schema import AgendaOut, UpdownOut, UpdownIn, VoteOut, VoteIn, AgendaIn, CustomPagination, \
     AgendaMyOut
 from discuss_api.apps.multi_auth.auth import TokenAuth
@@ -15,20 +15,28 @@ api = Router()
 
 @api.get('/', response=list[AgendaOut])
 @paginate(CustomPagination)
-def agenda_list_by_tag(request, tag_name: str = None, keyword: str = None, sort: str = None):
+def agenda_list_by_tag(request, tag_name: str = None, keyword: str = None, sort: str = None,
+                       search_type: SearchType = SearchType.ALL):
     query = Agenda.objects.all()
 
     if tag_name:
         query = query.filter(tags__name=tag_name)
 
     if keyword:
-        query = query.filter(title__contains=keyword) \
-                | query.filter(summary__contains=keyword) \
-                | query.filter(desc__contains=keyword)
+        match search_type:
+            case SearchType.TITLE:
+                query = query.filter(title__contains=keyword)
+            case SearchType.SUMMARY:
+                query.filter(summary__contains=keyword)
+            case SearchType.DESC:
+                query.filter(desc__contains=keyword)
+            case _:
+                query = query.filter(title__contains=keyword)\
+                        | query.filter(summary__contains=keyword)\
+                        | query.filter(desc__contains=keyword)
 
     if sort == 'recommend':
         query = query.order_by('-recommend')
-
 
     return query
 

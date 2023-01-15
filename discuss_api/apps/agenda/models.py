@@ -5,13 +5,20 @@ from django.db import models as m
 
 from discuss_api.apps.tag.models import Tag
 
-    User = get_user_model()
+User = get_user_model()
 
 
 class Updown(str, Enum):
     UP = 'up'
     DOWN = 'down'
     NONE = None
+
+
+class SearchType(str, Enum):
+    ALL = 'all'
+    TITLE = 'title'
+    SUMMARY = 'summary'
+    DESC = 'desc'
 
 
 class VoteChoice(Enum):
