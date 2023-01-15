@@ -1,17 +1,55 @@
+import re
+from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from ninja import File
 from ninja.files import UploadedFile
 from ninja import Router
 from ninja.errors import HttpError
 
+
 from discuss_api.apps.agenda.models import Comment, Agenda, CommentStatus
 from discuss_api.apps.agenda.schema import CommentOut, AgendaOut
 from discuss_api.apps.multi_auth.auth import TokenAuth
 from discuss_api.apps.member.models import UserProfile, ProfilePicture
-from discuss_api.apps.member.schema import UserOut, UserIn
-
+from discuss_api.apps.member.schema import UserOut, UserIn, UserSignup, UserLogin
+from discuss_api.apps.multi_auth.models import Token
 
 api = Router()
+
+
+@api.post('/signup')
+def upload(request, user_signup: UserSignup):
+    regex = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
+
+    if regex.match(user_signup.email) is None:
+        raise HttpError(400, '')
+
+    if User.objects.filter(username=user_signup.email).exists():
+        raise HttpError(423, '')
+
+    user = User.objects.create(email=user_signup.email, username=user_signup.email, password=user_signup.password)
+
+    profile = UserProfile.objects.create(
+        user=user,
+        nickname=user_signup.nickname,
+    )
+
+    token = Token.objects.create(user=user)
+
+    return {
+        'token': token.value,
+    }
+
+
+@api.post('/login')
+def upload(request, user_login: UserLogin):
+    user = get_object_or_404(User, username=user_login.email, password=user_login.password)
+
+    token = Token.objects.create(user=user)
+
+    return {
+        'token': token.value,
+    }
 
 
 @api.post('/files', auth=TokenAuth())

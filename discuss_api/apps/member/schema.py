@@ -3,6 +3,16 @@ from ninja import Schema
 from discuss_api.apps.member.models import UserProfile
 
 
+class UserLogin(Schema):
+    email: str
+    password: str
+
+class UserSignup(Schema):
+    email: str
+    nickname: str
+    password: str
+
+
 class UserIn(Schema):
     nickname: str
     picture_id: Optional[str]
