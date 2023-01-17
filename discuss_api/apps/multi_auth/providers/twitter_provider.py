@@ -1,3 +1,5 @@
+import uuid
+
 import tweepy
 from django.conf import settings
 from django.db import transaction
@@ -21,11 +23,13 @@ def exchange_token(tokens):
         skip_status=True,
     )
 
+    print(result)
+
     with transaction.atomic():
         try:
             auth = OAuth.objects.get(provider='twitter', id_on_provider=result.id_str)
         except OAuth.DoesNotExist:
-            user = User.objects.create(email=result.email)
+            user = User.objects.create(email=result.email, username=uuid.uuid4())
             auth = OAuth.objects.create(provider='twitter', id_on_provider=result.id_str, user=user)
 
     return auth

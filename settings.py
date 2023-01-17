@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'discuss_api.apps.tag',
     'discuss_api.apps.multi_auth',
     'discuss_api.apps.member',
+    'discuss_api.apps.multi_auth',
 ]
 
 MIDDLEWARE = [
@@ -86,10 +87,10 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
-DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-GS_BUCKET_NAME = os.environ.get('BUCKET_NAME')
-GS_QUERYSTRING_AUTH = False
-GS_FILE_OVERWRITE = False
+# DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+# GS_BUCKET_NAME = os.environ.get('BUCKET_NAME')
+# GS_QUERYSTRING_AUTH = False
+# GS_FILE_OVERWRITE = False
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
