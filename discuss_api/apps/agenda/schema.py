@@ -61,6 +61,16 @@ class CommentOut(Schema):
     created_time: datetime
     updated_time: datetime
     agreement: int
+    agenda_id: int
+    agenda_title: str
+
+    @staticmethod
+    def resolve_agenda_id(obj):
+        return obj.agenda.id
+
+    @staticmethod
+    def resolve_agenda_title(obj):
+        return obj.agenda.title
 
 
 class CommentAgreementOut(Schema):
