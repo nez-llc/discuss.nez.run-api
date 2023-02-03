@@ -1,4 +1,4 @@
-from typing import Optional, List, Any
+from typing import Optional
 from ninja import Schema
 from discuss_api.apps.member.models import UserProfile
 from discuss_api.apps.agenda.models import Comment, AgreementHistory, VoteChoice

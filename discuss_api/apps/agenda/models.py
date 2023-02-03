@@ -137,10 +137,6 @@ class Comment(m.Model):
 class AgreementHistory(m.Model):
     voter = m.ForeignKey(User, on_delete=m.CASCADE)
     comment = m.ForeignKey(Comment, on_delete=m.CASCADE, related_name='agreement_history')
-    value = m.CharField(
-        max_length=20, default=VoteChoice.NOT_SURE,
-        choices=[(vote.name, vote.value) for vote in VoteChoice]
-    )
 
     created_time = m.DateTimeField(auto_now_add=True)
 
