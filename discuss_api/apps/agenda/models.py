@@ -20,6 +20,11 @@ class VoteChoice(Enum):
     NOT_SURE = 'not_sure'
 
 
+class CommentVoteChoice(Enum):
+    AGREE = 'agree'
+    DISAGREE = 'disagree'
+
+
 class CommentStatus(str, Enum):
     ACTIVE = 0
     DELETED_BY_USER = 1
@@ -137,7 +142,10 @@ class Comment(m.Model):
 class AgreementHistory(m.Model):
     voter = m.ForeignKey(User, on_delete=m.CASCADE)
     comment = m.ForeignKey(Comment, on_delete=m.CASCADE, related_name='agreement_history')
-
+    value = m.CharField(
+        max_length=20,
+        choices=[(commentVote.name, commentVote.value) for commentVote in CommentVoteChoice]
+    )
     created_time = m.DateTimeField(auto_now_add=True)
 
 
