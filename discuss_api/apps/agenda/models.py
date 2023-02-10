@@ -16,8 +16,10 @@ class Updown(str, Enum):
 
 class VoteChoice(Enum):
     AGREE = 'agree'
-    NOT_AGREE = 'not_agree'
-    NOT_SURE = 'not_sure'
+    VERY_AGREE = 'very_agree'
+    DISAGREE = 'disagree'
+    VERY_DISAGREE = 'very_disagree'
+    NEUTRAL = 'neutral'
 
 
 class CommentVoteChoice(Enum):
@@ -49,13 +51,17 @@ class Agenda(m.Model):
     @property
     def vote_count(self):
         agree_count = self.vote_history.filter(value=VoteChoice.AGREE).count()
-        not_agree_count = self.vote_history.filter(value=VoteChoice.NOT_AGREE).count()
-        not_sure_count = self.vote_history.filter(value=VoteChoice.NOT_SURE).count()
+        very_agree_count = self.vote_history.filter(value=VoteChoice.VERY_AGREE).count()
+        disagree_count = self.vote_history.filter(value=VoteChoice.DISAGREE).count()
+        very_disagree_count = self.vote_history.filter(value=VoteChoice.VERY_DISAGREE).count()
+        neutral_count = self.vote_history.filter(value=VoteChoice.NEUTRAL).count()
 
         return {
+            'very_agree': very_agree_count,
             'agree': agree_count,
-            'not_agree': not_agree_count,
-            'not_sure': not_sure_count,
+            'disagree': disagree_count,
+            'very_disagree': very_disagree_count,
+            'neutral': neutral_count,
         }
 
     def make_vote(self, user, value: VoteChoice):
@@ -153,7 +159,7 @@ class Vote(m.Model):
     voter = m.ForeignKey(User, on_delete=m.CASCADE)
     agenda = m.ForeignKey(Agenda, on_delete=m.CASCADE, related_name='vote_history')
     value = m.CharField(
-        max_length=20,
+        max_length=25,
         choices=[(vote.name, vote.value) for vote in VoteChoice]
     )
 

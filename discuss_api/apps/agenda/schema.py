@@ -86,9 +86,11 @@ class VoteIn(Schema):
 
 
 class VoteOut(Schema):
+    very_agree: int
     agree: int
-    not_agree: int
-    not_sure: int
+    very_disagree: int
+    disagree: int
+    neutral: int
 
 
 class AgendaIn(Schema):
