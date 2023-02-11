@@ -43,7 +43,7 @@ def get_my_comments(request):
     if not request.auth:
         raise HttpError(401, 'Unauthorized')
 
-    comments = Comment.objects.filter(writer=request.auth)
+    comments = Comment.objects.filter(writer=request.auth).order_by('-created_time')
     return comments
 
 
