@@ -20,7 +20,7 @@ class VoteChoice(Enum):
     NOT_SURE = 'not_sure'
 
 
-class CommentVoteChoice(Enum):
+class CommentVote(Enum):
     AGREE = 'agree'
     DISAGREE = 'disagree'
 
@@ -126,10 +126,18 @@ class Comment(m.Model):
 
     @property
     def agreement(self):
-        return self.agreement_history.filter(comment=self).count()
+        agree_count = self.agreement_history.filter(comment=self, value=CommentVote.AGREE).count()
+        disagree_count = self.agreement_history.filter(comment=self, value=CommentVote.DISAGREE).count()
+        # agree_count = 0
+        # disagree_count = 0
+        return {
+            'agree': agree_count,
+            'disagree': disagree_count,
+        }
 
-    def add_agreement(self, user):
+    def add_agreement(self, user, value: CommentVote):
         history, created = AgreementHistory.objects.get_or_create(comment=self, voter=user)
+        history.value = value
         history.save()
 
     def delete_agreement(self, user):
@@ -144,7 +152,7 @@ class AgreementHistory(m.Model):
     comment = m.ForeignKey(Comment, on_delete=m.CASCADE, related_name='agreement_history')
     value = m.CharField(
         max_length=20,
-        choices=[(commentVote.name, commentVote.value) for commentVote in CommentVoteChoice]
+        choices=[(commentVote.name, commentVote.value) for commentVote in CommentVote]
     )
 
     created_time = m.DateTimeField(auto_now_add=True)

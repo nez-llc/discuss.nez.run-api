@@ -2,7 +2,7 @@ from typing import Optional
 from ninja import Schema
 from discuss_api.apps.member.models import UserProfile
 from discuss_api.apps.agenda.models import Comment
-from discuss_api.apps.agenda.models import Comment, AgreementHistory, CommentVoteChoice
+from discuss_api.apps.agenda.models import Comment, AgreementHistory, CommentVote
 
 
 class UserIn(Schema):
@@ -56,7 +56,7 @@ class UserOut(Schema):
     @staticmethod
     def resolve_active_point(obj):
         comment = Comment.objects.filter(writer=obj)
-        agree_count = AgreementHistory.objects.filter(comment__in=comment, value=CommentVoteChoice.AGREE).count()
-        disagree_count = AgreementHistory.objects.filter(comment__in=comment, value=CommentVoteChoice.DISAGREE).count()
+        agree_count = AgreementHistory.objects.filter(comment__in=comment, value=CommentVote.AGREE).count()
+        disagree_count = AgreementHistory.objects.filter(comment__in=comment, value=CommentVote.DISAGREE).count()
 
         return agree_count-disagree_count
