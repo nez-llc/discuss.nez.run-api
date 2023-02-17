@@ -14,7 +14,7 @@ class Updown(str, Enum):
     NONE = None
 
 
-class VoteChoice(Enum):
+class VoteChoice(str, Enum):
     AGREE = 'agree'
     VERY_AGREE = 'very_agree'
     DISAGREE = 'disagree'
@@ -22,7 +22,7 @@ class VoteChoice(Enum):
     NEUTRAL = 'neutral'
 
 
-class CommentVoteChoice(Enum):
+class CommentVoteChoice(str, Enum):
     AGREE = 'agree'
     DISAGREE = 'disagree'
 

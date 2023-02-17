@@ -85,12 +85,18 @@ class VoteIn(Schema):
     ballot: VoteChoice
 
 
-class VoteOut(Schema):
+class VoteOutCnt(Schema):
     very_agree: int
     agree: int
     very_disagree: int
     disagree: int
     neutral: int
+
+
+class VoteOut(Schema):
+    value: VoteChoice
+    agenda_id: int
+    voter_id: int
 
 
 class AgendaIn(Schema):
@@ -110,9 +116,11 @@ class AgendaOut(Schema):
     updated_time: datetime
     tags: list[TagOut]
     updown: UpdownOut
-    vote_count: VoteOut
+    vote_count: VoteOutCnt
     comment_count: int
 
 
 class AgendaMyOut(Schema):
     my_updown: Updown
+
+
