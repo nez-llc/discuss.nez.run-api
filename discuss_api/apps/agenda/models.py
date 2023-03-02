@@ -27,6 +27,11 @@ class CommentVoteChoice(str, Enum):
     DISAGREE = 'disagree'
 
 
+class CommentVote(Enum):
+    AGREE = 'agree'
+    DISAGREE = 'disagree'
+
+
 class CommentStatus(str, Enum):
     ACTIVE = 0
     DELETED_BY_USER = 1
@@ -132,10 +137,18 @@ class Comment(m.Model):
 
     @property
     def agreement(self):
-        return self.agreement_history.filter(comment=self).count()
+        agree_count = self.agreement_history.filter(comment=self, value=CommentVote.AGREE).count()
+        disagree_count = self.agreement_history.filter(comment=self, value=CommentVote.DISAGREE).count()
+        # agree_count = 0
+        # disagree_count = 0
+        return {
+            'agree': agree_count,
+            'disagree': disagree_count,
+        }
 
-    def add_agreement(self, user):
+    def add_agreement(self, user, value: CommentVote):
         history, created = AgreementHistory.objects.get_or_create(comment=self, voter=user)
+        history.value = value
         history.save()
 
     def delete_agreement(self, user):

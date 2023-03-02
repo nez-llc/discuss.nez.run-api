@@ -3,7 +3,7 @@ from ninja import Router
 from ninja.errors import HttpError
 
 from discuss_api.apps.agenda.models import Comment, Agenda, CommentStatus, AgreementHistory
-from discuss_api.apps.agenda.schema import CommentOut, CommentIn, DeleteCommentOut, CommentAgreementOut
+from discuss_api.apps.agenda.schema import CommentOut, CommentIn, DeleteCommentOut, CommentAgreementOut, CommentVoteIn, CommentVoteOut
 from discuss_api.apps.multi_auth.auth import TokenAuth
 
 
@@ -52,17 +52,18 @@ def delete_comment(request, agenda_id: int, comment_id: int):
     return 201, {'deleted_comment_id': comment.id}
 
 
-@api.post('/{agenda_id}/comments/{comment_id}/agreement', response={201: CommentAgreementOut}, auth=TokenAuth())
-def add_comment_agreement(request, agenda_id: int, comment_id: int):
+@api.post('/{agenda_id}/comments/{comment_id}/agreement', response={201: CommentVoteOut}, auth=TokenAuth())
+def add_comment_agreement(request, agenda_id: int, comment_id: int, vote: CommentVoteIn):
     if not request.auth:
         raise HttpError(401, 'Unauthorized')
 
     comment = get_object_or_404(Comment, id=comment_id)
-    comment.add_agreement(request.auth)
-    return 201, {'total_agreement': comment.agreement}
+    comment.add_agreement(request.auth, value=vote.ballot)
+
+    return 201, comment.agreement
 
 
-@api.delete('/{agenda_id}/comments/{comment_id}/agreement', response={201: CommentAgreementOut}, auth=TokenAuth())
+@api.delete('/{agenda_id}/comments/{comment_id}/agreement', response={201: CommentVoteOut}, auth=TokenAuth())
 def delete_comment_agreement(request, agenda_id: int, comment_id: int):
     if not request.auth:
         raise HttpError(401, 'Unauthorized')
@@ -76,4 +77,4 @@ def delete_comment_agreement(request, agenda_id: int, comment_id: int):
     if agreement_history:
         comment.delete_agreement(request.auth)
 
-    return 201, {'total_agreement': comment.agreement}
+    return 201, comment.agreementZ
