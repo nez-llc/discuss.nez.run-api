@@ -4,7 +4,8 @@ from typing import List, Any
 from ninja import Schema
 from ninja.pagination import PaginationBase
 
-from discuss_api.apps.agenda.models import Updown, VoteChoice, CommentStatus, CommentVote
+from discuss_api.apps.agenda.models import Updown, VoteChoice, CommentStatus, 
+
 from discuss_api.apps.member.schema import UserOut
 
 
@@ -94,10 +95,18 @@ class VoteIn(Schema):
     ballot: VoteChoice
 
 
-class VoteOut(Schema):
+class VoteOutCnt(Schema):
+    very_agree: int
     agree: int
-    not_agree: int
-    not_sure: int
+    very_disagree: int
+    disagree: int
+    neutral: int
+
+
+class VoteOut(Schema):
+    value: VoteChoice
+    agenda_id: int
+    voter_id: int
 
 
 class AgendaIn(Schema):
@@ -117,7 +126,7 @@ class AgendaOut(Schema):
     updated_time: datetime
     tags: list[TagOut]
     updown: UpdownOut
-    vote_count: VoteOut
+    vote_count: VoteOutCnt
     comment_count: int
 
 
