@@ -1,6 +1,7 @@
 from typing import Optional
 from ninja import Schema
 from discuss_api.apps.member.models import UserProfile
+from discuss_api.apps.agenda.models import Comment, AgreementHistory, CommentVoteChoice
 
 
 class UserIn(Schema):
@@ -13,6 +14,8 @@ class UserOut(Schema):
     nickname: str
     picture: Optional[str]
     picture_id: Optional[str]
+    date_joined: str
+    active_point: int
 
     @staticmethod
     def resolve_nickname(obj):
@@ -40,3 +43,19 @@ class UserOut(Schema):
                 return None
         except UserProfile.DoesNotExist:
             return ''
+
+    @staticmethod
+    def resolve_date_joined(obj):
+        try:
+            d = obj.date_joined
+            return d.strftime("%Y-%m-%d %I:%m:%S")
+        except UserProfile.DoesNotExist:
+            return ''
+
+    @staticmethod
+    def resolve_active_point(obj):
+        comment = Comment.objects.filter(writer=obj)
+        agree_count = AgreementHistory.objects.filter(comment__in=comment, value=CommentVoteChoice.AGREE).count()
+        disagree_count = AgreementHistory.objects.filter(comment__in=comment, value=CommentVoteChoice.DISAGREE).count()
+
+        return agree_count-disagree_count

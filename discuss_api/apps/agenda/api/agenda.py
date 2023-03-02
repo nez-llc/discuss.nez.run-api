@@ -3,9 +3,9 @@ from ninja import Router
 from ninja.errors import HttpError
 from ninja.pagination import paginate
 
-from discuss_api.apps.agenda.models import Agenda, User
-from discuss_api.apps.agenda.schema import AgendaOut, UpdownOut, UpdownIn, VoteOut, VoteIn, AgendaIn, CustomPagination, \
-    AgendaMyOut
+from discuss_api.apps.agenda.models import Agenda, User, Vote
+from discuss_api.apps.agenda.schema import AgendaOut, UpdownOut, UpdownIn, VoteOutCnt, VoteIn, AgendaIn, CustomPagination, \
+    AgendaMyOut, VoteOut
 from discuss_api.apps.multi_auth.auth import TokenAuth
 from discuss_api.apps.tag.models import Tag
 
@@ -93,8 +93,15 @@ def edit_agenda_updown(request, agenda_id: int, updown: UpdownIn):
     return agenda.updown
 
 
-@api.post('/{agenda_id}/votes', response={201: VoteOut}, auth=TokenAuth())
+@api.post('/{agenda_id}/votes', response={201: VoteOutCnt}, auth=TokenAuth())
 def vote_on_the_agenda(request, agenda_id: int, vote: VoteIn):
     agenda = Agenda.objects.get(id=agenda_id)
     agenda.make_vote(user=request.auth, value=vote.ballot)
     return agenda.vote_count
+
+
+@api.get('/{agenda_id}/votes', response=list[VoteOut])
+def get_vote_on_the_agenda(request, agenda_id: int):
+    vote = Vote.objects.filter(agenda_id=agenda_id)
+
+    return vote
