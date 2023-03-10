@@ -8,6 +8,7 @@ from discuss_api.apps.statistic.api import api as statistics_api
 from discuss_api.apps.status.api import api as status_api
 from discuss_api.apps.member.api import api as member_api
 from discuss_api.apps.multi_auth.api import api as auth_api
+from discuss_api.apps.tag.api import api as tag_api
 
 
 api = NinjaAPI()
@@ -16,6 +17,7 @@ api.add_router('statistics', statistics_api)
 api.add_router('status', status_api)
 api.add_router('members', member_api)
 api.add_router('auth', auth_api)
+api.add_router('tags', tag_api)
 
 
 urlpatterns = [
