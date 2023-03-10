@@ -61,6 +61,16 @@ class CommentOut(Schema):
     created_time: datetime
     updated_time: datetime
     agreement: int
+    agenda_id: int
+    agenda_title: str
+
+    @staticmethod
+    def resolve_agenda_id(obj):
+        return obj.agenda.id
+
+    @staticmethod
+    def resolve_agenda_title(obj):
+        return obj.agenda.title
 
 
 class CommentAgreementOut(Schema):
@@ -75,10 +85,18 @@ class VoteIn(Schema):
     ballot: VoteChoice
 
 
-class VoteOut(Schema):
+class VoteOutCnt(Schema):
+    very_agree: int
     agree: int
-    not_agree: int
-    not_sure: int
+    very_disagree: int
+    disagree: int
+    neutral: int
+
+
+class VoteOut(Schema):
+    value: VoteChoice
+    agenda_id: int
+    voter_id: int
 
 
 class AgendaIn(Schema):
@@ -98,9 +116,11 @@ class AgendaOut(Schema):
     updated_time: datetime
     tags: list[TagOut]
     updown: UpdownOut
-    vote_count: VoteOut
+    vote_count: VoteOutCnt
     comment_count: int
 
 
 class AgendaMyOut(Schema):
     my_updown: Updown
+
+
