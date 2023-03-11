@@ -9,6 +9,7 @@ load_dotenv('.env.local')
 BASE_DIR = Path(__file__).resolve().parent
 DB_CONNECTION_URL = os.environ.get('DB_CONNECTION_URL')
 RUN_ON_REAL_SERVER = os.environ.get('RUN_ON_REAL_SERVER', 'false')
+BASE_URL = os.environ.get('BASE_URL')
 
 DEBUG = RUN_ON_REAL_SERVER != 'true'
 
@@ -21,6 +22,10 @@ WSGI_APPLICATION = 'discuss_api.wsgi.application'
 ALLOWED_HOSTS = ['*']
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    BASE_URL,
+]
 
 INSTALLED_APPS = [
     'corsheaders',
