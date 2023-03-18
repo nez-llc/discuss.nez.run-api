@@ -57,6 +57,7 @@ class CommentOut(Schema):
     id: int
     writer: UserOut
     status: CommentStatus
+    deleted: bool
     content: str
     created_time: datetime
     updated_time: datetime

@@ -126,6 +126,10 @@ class Comment(m.Model):
     def agreement(self):
         return self.agreement_history.filter(comment=self).count()
 
+    @property
+    def deleted(self):
+        return self.status != CommentStatus.ACTIVE
+
     def add_agreement(self, user):
         history, created = AgreementHistory.objects.get_or_create(comment=self, voter=user)
         history.save()
