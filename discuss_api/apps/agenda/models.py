@@ -15,12 +15,12 @@ class Updown(str, Enum):
     NONE = None
 
 
-class VoteChoice(str, Enum):
-    AGREE = 'agree'
-    VERY_AGREE = 'very_agree'
-    DISAGREE = 'disagree'
-    VERY_DISAGREE = 'very_disagree'
-    NEUTRAL = 'neutral'
+class VoteChoice(TextChoices, Enum):
+    AGREE = 'agree', '찬성'
+    VERY_AGREE = 'strongly_agree', '매우 찬성'
+    DISAGREE = 'disagree', '반대'
+    VERY_DISAGREE = 'strongly_disagree', '매우 반대'
+    NEUTRAL = 'neither', '중립'
 
 
 class CommentVoteChoice(str, Enum):
@@ -154,10 +154,7 @@ class AgreementHistory(m.Model):
 class Vote(m.Model):
     voter = m.ForeignKey(User, on_delete=m.CASCADE)
     agenda = m.ForeignKey(Agenda, on_delete=m.CASCADE, related_name='vote_history')
-    value = m.CharField(
-        max_length=25,
-        choices=[(vote.name, vote.value) for vote in VoteChoice]
-    )
+    value = m.CharField(max_length=25, choices=VoteChoice.choices)
 
     created_time = m.DateTimeField(auto_now_add=True)
     updated_time = m.DateTimeField(auto_now=True)
