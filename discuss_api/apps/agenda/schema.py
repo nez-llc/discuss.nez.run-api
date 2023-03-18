@@ -115,9 +115,6 @@ class AgendaOut(Schema):
     created_time: datetime
     updated_time: datetime
     tags: list[TagOut]
-    updown: UpdownOut
-    vote_count: VoteOutCnt
-    comment_count: int
 
 
 class AgendaMyOut(Schema):
