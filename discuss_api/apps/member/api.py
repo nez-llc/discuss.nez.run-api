@@ -3,7 +3,7 @@ from ninja.files import UploadedFile
 from ninja import Router
 from ninja.errors import HttpError
 
-from discuss_api.apps.agenda.models import Comment, Agenda, CommentStatus
+from discuss_api.apps.agenda.models import Comment, Agenda, CommentStatus, Vote
 from discuss_api.apps.agenda.schema import CommentOut, AgendaOut
 from discuss_api.apps.multi_auth.auth import TokenAuth
 from discuss_api.apps.member.models import UserProfile, ProfilePicture
@@ -37,13 +37,23 @@ def get_my_member(request):
     return request.auth
 
 
-@api.get('/my/comments', response={200: list[CommentOut]}, auth=TokenAuth())
-def get_my_comments(request):
-    if not request.auth:
-        raise HttpError(401, 'Unauthorized')
-
-    comments = Comment.objects.filter(writer=request.auth).order_by('-created_time')
+@api.get('/{member_id}/comments', response={200: list[CommentOut]})
+def get_user_comments(request, member_id: int):
+    comments = Comment.objects.filter(writer__id=member_id).order_by('-created_time')
     return comments
+
+
+@api.get('/{member_id}/votes')
+def get_user_votes(request, member_id: int):
+    votes = Vote.objects.filter(voter__id=member_id).order_by('-created_time').select_related('agenda')
+    return [{
+        'agenda': {
+            'id': vote.agenda.id,
+            'title': vote.agenda.title,
+        },
+        'vote': vote.value,
+        'created_time': vote.created_time,
+    } for vote in votes]
 
 
 @api.get('/my/agenda', response={200: list[AgendaOut]}, auth=TokenAuth())
