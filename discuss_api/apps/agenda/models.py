@@ -2,6 +2,7 @@ from enum import Enum
 
 from django.contrib.auth import get_user_model
 from django.db import models as m
+from django.db.models import TextChoices
 
 from discuss_api.apps.tag.models import Tag
 
@@ -27,14 +28,11 @@ class CommentVoteChoice(str, Enum):
     DISAGREE = 'disagree'
 
 
-class CommentStatus(str, Enum):
-    ACTIVE = 0
-    DELETED_BY_USER = 1
-    DELETED_BY_ADMIN = 2
-    DELETED_BY_WITHDRAWAL = 3
-
-    def __str__(self):
-        return self.name
+class CommentStatus(TextChoices, Enum):
+    ACTIVE = 'normal', '정상'
+    DELETED_BY_USER = 'deleted_by_user', '사용자가 삭제'
+    DELETED_BY_ADMIN = 'deleted_by_admin', '관리자에 의해 삭제'
+    DELETED_BY_WITHDRAWAL = 'deleted_by_withdrawal', '탈퇴한 사용자의 댓글'
 
 
 class Agenda(m.Model):
@@ -120,8 +118,8 @@ class Comment(m.Model):
 
     status = m.CharField(
         max_length=25,
-        choices=[(status.name, status.value) for status in CommentStatus],
-        default=CommentStatus.ACTIVE
+        choices=CommentStatus.choices,
+        default=CommentStatus.ACTIVE,
     )
 
     @property
