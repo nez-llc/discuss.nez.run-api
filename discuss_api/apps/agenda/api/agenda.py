@@ -103,7 +103,6 @@ def vote_on_the_agenda(request, agenda_id: int, vote: VoteIn):
 
 
 @api.get('/{agenda_id}/votes', response=list[VoteOut])
-def get_vote_on_the_agenda(request, agenda_id: int):
-    vote = Vote.objects.filter(agenda_id=agenda_id)
-
-    return vote
+def get_votes_on_the_agenda(request, agenda_id: int):
+    votes = Vote.objects.filter(agenda_id=agenda_id)
+    return votes
