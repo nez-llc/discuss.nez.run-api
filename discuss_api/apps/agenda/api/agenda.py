@@ -47,20 +47,22 @@ def get_agenda(request, agenda_id: int):
     return {'my_updown': agenda.check_updown(request.auth)}
 
 
+# TODO : enable after adding permission checks
 @api.post('/', response={201: AgendaOut}, auth=TokenAuth())
 def insert_agenda(request, agenda_in: AgendaIn):
-    agenda = Agenda.objects.create(
-        writer=request.auth,
-        title=agenda_in.title,
-        summary=agenda_in.summary,
-        desc=agenda_in.desc,
-    )
-
-    for tag_id in agenda_in.tags:
-        tag = Tag.objects.get(tag_id)
-        agenda.tags.add(tag)
-
-    return agenda
+    pass
+    # agenda = Agenda.objects.create(
+    #     writer=request.auth,
+    #     title=agenda_in.title,
+    #     summary=agenda_in.summary,
+    #     desc=agenda_in.desc,
+    # )
+    #
+    # for tag_id in agenda_in.tags:
+    #     tag = Tag.objects.get(tag_id)
+    #     agenda.tags.add(tag)
+    #
+    # return agenda
 
 
 @api.post('/{agenda_id}', response={201: AgendaOut}, auth=TokenAuth())
