@@ -50,19 +50,13 @@ class Agenda(m.Model):
 
     @property
     def vote_count(self):
-        agree_count = self.vote_history.filter(value=VoteChoice.AGREE).count()
-        very_agree_count = self.vote_history.filter(value=VoteChoice.VERY_AGREE).count()
-        disagree_count = self.vote_history.filter(value=VoteChoice.DISAGREE).count()
-        very_disagree_count = self.vote_history.filter(value=VoteChoice.VERY_DISAGREE).count()
-        neutral_count = self.vote_history.filter(value=VoteChoice.NEUTRAL).count()
-
-        return {
-            'very_agree': very_agree_count,
-            'agree': agree_count,
-            'disagree': disagree_count,
-            'very_disagree': very_disagree_count,
-            'neutral': neutral_count,
-        }
+        return self.vote_history.aggregate(
+            strongly_agree=m.Count('value', filter=m.Q(value=VoteChoice.VERY_AGREE)),
+            agree=m.Count('value', filter=m.Q(value=VoteChoice.AGREE)),
+            neither=m.Count('value', filter=m.Q(value=VoteChoice.NEUTRAL)),
+            disagree=m.Count('value', filter=m.Q(value=VoteChoice.DISAGREE)),
+            strongly_disagree=m.Count('value', filter=m.Q(value=VoteChoice.VERY_DISAGREE)),
+        )
 
     def make_vote(self, user, value: VoteChoice):
         ballot, created = Vote.objects.get_or_create(agenda=self, voter=user)
